@@ -1,33 +1,60 @@
-# doubly linked list in python
-
 class Node:
-    def __init__(self, data):
-        self.data = data
-        self.previous_node = None
-        self.next_node = None
+    def __init__(self, value):
+        self.value = value
+        self.previous = None
+        self.next = None
+
+
+    def get_value(self):
+        return self.value
 
 
 class DoublyLinkedList:
     def __init__(self):
         self.head = None
+        self.tail = None
+        self.length = 0
 
-    def insert(self, data):
-        new_node = Node(data)
 
-        if not self.head:
+    def get_length(self):
+        return self.length
+
+
+    def append(self, value):
+        new_node = Node(value)
+        end = self.tail
+        self.length += 1
+
+        if not end:
             self.head = new_node
+            self.tail = new_node
             return
 
-        new_node.previous_node = self.head
-        self.head.next_node = new_node
+        new_node.previous = end
+        end.next = new_node
+        self.tail = new_node
+
+
+    def prepend(self, value):
+        new_node = Node(value)
+        start = self.head
+        self.length += 1
+
+        if not start:
+            self.head = new_node
+            self.tail = new_node
+            return
+
+        new_node.next = start
+        start.previous = new_node
         self.head = new_node
 
+    def to_list(self):
+        result = []
+        current = self.head
 
-#-----
-dll = DoublyLinkedList()
-dll.insert(1)
-print(dll.head)
-dll.insert(2)
-print(dll.head)
-dll.insert(3)
-print(dll.head)
+        while current:
+            result.append(current.value)
+            current = current.next
+
+        return result
