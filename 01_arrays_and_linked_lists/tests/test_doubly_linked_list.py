@@ -63,6 +63,22 @@ def test_delete_first(values, delete, expected):
 
 @pytest.mark.parametrize('values, delete, expected', [
     ([1, 2, 3, 4, 5], 2, [1, 3, 4, 5]),
+    ([1, 2, 3, 2, 5], 2, [1, 2, 3, 5]),
+    ([1], 1, []),
+    ([1, 1], 1, [1]),
+    ([2, 1], 1, [2]),
+])
+def test_delete_first_from_end(values, delete, expected):
+    dll = DoublyLinkedList()
+    for v in values:
+        dll.append(v)
+    dll.delete_first(delete, from_end=True)
+    assert dll.to_list() == expected
+
+
+@pytest.mark.parametrize('values, delete, expected', [
+    ([1, 2, 3, 4, 5], 2, [1, 3, 4, 5]),
+    ([1, 2, 3, 2, 5], 2, [1, 3, 5]),
     ([1, 2, 3, 4, 5], 1, [2, 3, 4, 5]),
     ([1, 1, 2, 3, 4], 1, [2, 3, 4]),
     ([1, 2, 3, 3, 4], 3, [1, 2, 4]),

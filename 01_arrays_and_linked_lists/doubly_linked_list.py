@@ -62,7 +62,8 @@ class DoublyLinkedList:
 
 
     def delete_first(self, value, from_end=False):
-        current = self.head
+        #TODO: use the from_end param
+        current = (self.head if not from_end else self.tail)
 
         while current:
             if current.value == value:
@@ -81,7 +82,7 @@ class DoublyLinkedList:
                 self.length -= 1
                 return
             else:
-                current = current.next
+                current = (current.next if not from_end else current.previous)
         
         #TODO: replace this with an exception
         return 'value not found'
