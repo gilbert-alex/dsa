@@ -20,6 +20,17 @@ class DoublyLinkedList:
         return self.length
 
 
+    def to_list(self):
+        result = []
+        current = self.head
+
+        while current:
+            result.append(current.value)
+            current = current.next
+
+        return result
+
+
     def append(self, value):
         new_node = Node(value)
         end = self.tail
@@ -49,12 +60,53 @@ class DoublyLinkedList:
         start.previous = new_node
         self.head = new_node
 
-    def to_list(self):
-        result = []
+
+    def delete_first(self, value, from_end=False):
         current = self.head
 
         while current:
-            result.append(current.value)
-            current = current.next
+            if current.value == value:
+                if not current.previous and not current.next:
+                    self.head = None
+                    self.tail = None
+                elif not current.previous:
+                    self.head = current.next
+                    self.head.previous = None
+                elif not current.next:
+                    self.tail = current.previous
+                    self.tail.next = None
+                else:
+                    current.previous.next = current.next
+                    current.next.previous = current.previous
+                self.length -= 1
+                return
+            else:
+                current = current.next
+        
+        #TODO: replace this with an exception
+        return 'value not found'
 
-        return result
+
+    def delete_all(self, value):
+        current = self.head
+
+        while current:
+            if current.value == value:
+                if not current.previous and not current.next:
+                    self.head = None
+                    self.tail = None
+                elif not current.previous:
+                    current.next.previous = None
+                    self.head = current.next
+                elif not current.next:
+                    current.previous.next = None
+                    self.tail = current.previous
+                else:
+                    current.previous.next = current.next
+                    current.next.previous = current.previous
+                self.length -= 1
+                current = current.next
+            else:
+                current = current.next
+
+
