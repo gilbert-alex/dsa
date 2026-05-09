@@ -21,6 +21,7 @@ class LinkedList:
 
 	def prepend(self, value):
 		'''
+		Add a new Node with it's value equal to value to the head of the linked list.
 		O(1) time and O(1) space
 		Because no traversal is necessary and self.head pointer is maintained.
 		'''
@@ -38,6 +39,7 @@ class LinkedList:
 
 	def append_slow(self, value):
 		''' 
+		Add a new Node with it's value equal to value to the tail of the linked list.
 		O(n) time and O(1) space
 		Without using self.tail pointer, you must traverse the ll to append.
 		'''
@@ -54,7 +56,12 @@ class LinkedList:
 		while current:
 			if not current.next:
 				current.next = new_node
-				# self.tail wouldn't normally be here if only O(n) time 
+				'''
+				self.tail wouldn't typically be in an object that only supports
+				O(n) time insertion; but, as this object is used for education
+				and reference, I am maintaining the tail pointer here so that
+				it does not go stale.
+				'''
 				self.tail = new_node
 				return
 			else:
@@ -63,6 +70,7 @@ class LinkedList:
 
 	def append_fast(self, value):
 		'''
+		Add a new Node with it's value equal to value to the tail of the linked list.
 		O(1) time and O(1) space
 		Thanks to the use of self.tail pointer, no traversal is necessary.
 		'''
@@ -93,8 +101,16 @@ class LinkedList:
 		while current:
 			if current.value == value:
 				self.length -= 1
-				if not previous:
+				if not previous and not current.next:
+					self.head = None
+					self.tail = None
+					current = current.next
+				elif not previous:
 					self.head = current.next
+					current = current.next
+				elif not current.next:
+					previous.next = None
+					self.tail = previous
 					current = current.next
 				else:
 					previous.next = current.next 
@@ -104,9 +120,11 @@ class LinkedList:
 				current = current.next
 
 
-	def search(self, target):
+	def count(self, target):
 		''' 
 		Returns count of the times target is found in the list.
+		O(n) time and O(1) space
+		Time complexity cannot be reduced without a way to randomly access nodes.
 		'''
 		current = self.head
 		counter = 0
@@ -122,7 +140,32 @@ class LinkedList:
 		return counter
 
 
+	def search(self, target):
+		''' 
+		Returns list of indicies where target is found in the list.
+		O(n) time and O(1) space
+		Time complexity cannot be reduced without a way to randomly access nodes.
+		'''
+		current = self.head
+		counter = 0
+		indicies = []
+
+		if not current:
+			return indicies
+
+		while current:
+			if current.value == target:
+				indicies.append(counter)
+			counter += 1
+			current = current.next
+
+		return indicies
+
+
 	def to_list(self):
+		'''
+		Helper method for tests.
+		'''
 		result = []
 		current = self.head
 		while current:
