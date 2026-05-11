@@ -15,7 +15,34 @@ class LinkedList:
 		self.length = 0
 
 
-	def get_length(self):
+	def __repr__(self):
+		parts = []
+		current = self.head
+		while current:
+			parts.append(str(current.value))
+			current = current.next
+		parts.append('None')
+		
+		return (
+			f'LinkedList('
+			f'head={self.head},' 
+			f'tail={self.tail},' 
+			f'length={self.length}'
+			f'parts={" -> ".join(parts)}'
+		)
+
+
+	def __str__(self):
+		parts = []
+		current = self.head
+		while current:
+			parts.append(str(current.value))
+			current = current.next
+		parts.append('None')
+		return f'Parts= {" -> ".join(parts)}'
+
+
+	def __len__(self):
 		return self.length
 
 
@@ -164,7 +191,8 @@ class LinkedList:
 
 	def to_list(self):
 		'''
-		Helper method for tests.
+		Returns a List of the LinkedList Node values.
+        O(n) time and O(n) space
 		'''
 		result = []
 		current = self.head
@@ -175,4 +203,9 @@ class LinkedList:
 
 
 if __name__ == "__main__":
-	pass
+	sll = LinkedList()
+	sll.append_fast(1)
+	sll.append_fast(2)
+	print(sll)
+	print(repr(sll))
+	print(len(sll))
