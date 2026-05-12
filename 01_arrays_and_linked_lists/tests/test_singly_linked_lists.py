@@ -54,14 +54,14 @@ class TestPrepend:
 
     def test_prepend_sets_head_and_tail(self, empty_sll):
         empty_sll.prepend(1)
-        assert empty_sll.head.value() == 1
-        assert empty_sll.tail.value() == 1
+        assert empty_sll.head.value == 1
+        assert empty_sll.tail.value == 1
 
 
     def test_prepend_advances_head_pointer(self, sample_sll):
         sample_sll.prepend(0)
-        assert sample_sll.head.value() == 0
-        assert sample_sll.head.next.value() == 1
+        assert sample_sll.head.value == 0
+        assert sample_sll.head.next.value == 1
 
 
     def test_prepend_increments_length(self, sample_sll):
@@ -89,13 +89,13 @@ class TestAppendSlow:
 
     def test_append_sets_head_and_tail(self, empty_sll):
         empty_sll.append_slow(1)
-        assert empty_sll.head.value() == 1
-        assert empty_sll.tail.value() == 1
+        assert empty_sll.head.value == 1
+        assert empty_sll.tail.value == 1
 
 
     def test_append_advances_tail_pointer(self, sample_sll):
         sample_sll.append_slow(0)
-        assert sample_sll.tail.value() == 0
+        assert sample_sll.tail.value == 0
 
 
     def test_append_increments_length(self, sample_sll):
@@ -122,13 +122,13 @@ class TestAppendFast:
 
     def test_append_sets_head_and_tail(self, empty_sll):
         empty_sll.append_fast(1)
-        assert empty_sll.head.value() == 1
-        assert empty_sll.tail_value() == 1
+        assert empty_sll.head.value == 1
+        assert empty_sll.tail.value == 1
 
 
     def test_append_advances_tail_pointer(self, sample_sll):
         sample_sll.append_fast(0)
-        assert sample_sll.tail.value() == 0
+        assert sample_sll.tail.value == 0
 
 
     def test_append_increments_length(self, sample_sll):
@@ -165,7 +165,7 @@ class TestDelete:
             sll.append_fast(v)
         sll.delete(1)
         assert sll.head.value == 2
-        assert sll.head.next.value() == 3
+        assert sll.head.next.value == 3
 
 
     def test_delete_tail_updates_tail_pointer(self):
