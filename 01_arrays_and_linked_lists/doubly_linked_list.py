@@ -1,12 +1,11 @@
 class Node:
+    '''
+    An object to maintain values and pointers for Nodes in a Doubly Linked List.
+    '''
     def __init__(self, value):
         self.value = value
         self.previous = None
         self.next = None
-
-
-    def get_value(self):
-        return self.value
 
 
 class DoublyLinkedList:
@@ -16,37 +15,43 @@ class DoublyLinkedList:
         self.length = 0
 
 
-    def get_length(self):
+    def __repr__(self):
+        parts = []
+        current = self.head
+        while current:
+            parts.append(str(current.value))
+            current = current.next
+        parts.append('None')
+
+        return (
+            f'LinkedList('
+            f'head={self.head},'
+            f'tail={self.tail},'
+            f'length={self.length},'
+            f'parts={" -> ".join(parts)}'
+        )
+
+
+    def __str__(self):
+        parts = []
+        current = self.head
+        while current:
+            parts.append(str(current.value))
+            current = current.next
+        parts.append('None')
+        return f'Parts= {" -> ".join(parts)}'
+
+
+    def __len__(self):
         return self.length
 
 
-    def to_list(self):
-        result = []
-        current = self.head
-
-        while current:
-            result.append(current.value)
-            current = current.next
-
-        return result
-
-
-    def append(self, value):
-        new_node = Node(value)
-        end = self.tail
-        self.length += 1
-
-        if not end:
-            self.head = new_node
-            self.tail = new_node
-            return
-
-        new_node.previous = end
-        end.next = new_node
-        self.tail = new_node
-
-
     def prepend(self, value):
+        '''
+        Add a new Node to the head of the linked list.
+        O(1) time and O(1) space.
+        No list traversal is necessary because a head pointer is maintained.
+        '''
         new_node = Node(value)
         start = self.head
         self.length += 1
@@ -61,8 +66,34 @@ class DoublyLinkedList:
         self.head = new_node
 
 
+    def append(self, value):
+        '''
+        Add a new Node to the tail of the linked list.
+        O(1) time and O(1) space.
+        No list traversal is necessary because a tail pointer is maintained.
+        '''
+        new_node = Node(value)
+        end = self.tail
+        self.length += 1
+
+        if not end:
+            self.head = new_node
+            self.tail = new_node
+            return
+
+        new_node.previous = end
+        end.next = new_node
+        self.tail = new_node
+
+
     def delete_first(self, value, from_end=False):
-        #TODO: use the from_end param
+        '''
+        Delete the first occurance of a value starting from the linked list
+        head, by default. search will start from the
+        head of the linked list unless "from_end" is set to True.
+        O(n) time and O(1) space.
+        Time complexity cannot be reduced without a way to randomly access nodes.
+        '''
         current = (self.head if not from_end else self.tail)
 
         while current:
@@ -84,11 +115,15 @@ class DoublyLinkedList:
             else:
                 current = (current.next if not from_end else current.previous)
         
-        #TODO: replace this with an exception
-        return 'value not found'
+        raise ValueError(f'{value} not found.')
 
 
     def delete_all(self, value):
+        '''
+        Delete all nodes with a given value.
+        O(n) time and O(1) space.
+        Time complexity cannot be reduced without a way to randomly access nodes.
+        '''
         current = self.head
 
         while current:
@@ -111,3 +146,45 @@ class DoublyLinkedList:
                 current = current.next
 
 
+    def count(self, target):
+        '''
+        Returns count of the times target is found in the linked list.
+        O(n) time and O(1) space.
+        Reducing time complexity would require maintaining an additional data structure.
+        '''
+        #TODO: implement from singly linked list
+        pass
+
+
+    def search(self, target):
+        '''
+        Returns list of indicies where target is found in the list.
+        O(n) time and O(1) space.
+        Time complexity cannot be reduced without a way to randomly access nodes.
+        '''
+        #TODO: implement from singly linked list
+        pass
+
+
+    def to_list(self):
+        '''
+        Returns a List of the LinkedList Node values.
+        O(n) time and O(n) space
+        '''
+        result = []
+        current = self.head
+
+        while current:
+            result.append(current.value)
+            current = current.next
+
+        return result
+
+
+if __name__ == "__main__":
+    dll = DoublyLinkedList()
+    dll.append(1)
+    dll.append(2)
+    print(dll)
+    print(repr(dll))
+    print(len(dll))
