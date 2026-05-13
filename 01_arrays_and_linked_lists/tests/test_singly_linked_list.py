@@ -19,7 +19,7 @@ def sample_sll():
 def test_node_initialization():
     n = Node(5)
     assert n.value == 5
-    assert n.next == None
+    assert n.next is None
 
 
 def test_linkedlist_initialization():
@@ -96,6 +96,7 @@ class TestAppendSlow:
     def test_append_advances_tail_pointer(self, sample_sll):
         sample_sll.append_slow(0)
         assert sample_sll.tail.value == 0
+        assert sample_sll.tail.next is None
 
 
     def test_append_increments_length(self, sample_sll):

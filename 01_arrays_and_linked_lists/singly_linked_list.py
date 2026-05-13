@@ -1,4 +1,7 @@
 class Node:
+    '''
+    An object to maintain values and pointers for Nodes in a Singly Linked List.
+    '''
 	def __init__(self, value):
 		self.value = value
 		self.next = None
@@ -44,9 +47,9 @@ class SinglyLinkedList:
 
 	def prepend(self, value):
 		'''
-		Add a new Node with it's value equal to value to the head of the linked list.
+        Add a new Node to the head of the linked list.
 		O(1) time and O(1) space
-		Because no traversal is necessary and self.head pointer is maintained.
+        No list traversal is necessary because a head pointer is maintained.
 		'''
 		new_node = Node(value)
 		self.length += 1
@@ -62,7 +65,7 @@ class SinglyLinkedList:
 
 	def append_slow(self, value):
 		''' 
-		Add a new Node with it's value equal to value to the tail of the linked list.
+        Add a new Node to the tail of the linked list.
 		O(n) time and O(1) space
 		Without using self.tail pointer, you must traverse the ll to append.
 		'''
@@ -83,7 +86,7 @@ class SinglyLinkedList:
 				self.tail wouldn't typically be in an object that only supports
 				O(n) time insertion; but, as this object is used for education
 				and reference, I am maintaining the tail pointer here so that
-				it does not go stale.
+				it does not go stale for other methods.
 				'''
 				self.tail = new_node
 				return
@@ -93,9 +96,9 @@ class SinglyLinkedList:
 
 	def append_fast(self, value):
 		'''
-		Add a new Node with it's value equal to value to the tail of the linked list.
+		Add a new Node to the tail of the linked list.
 		O(1) time and O(1) space
-		Thanks to the use of self.tail pointer, no traversal is necessary.
+        No list traversal is necessary because a tail pointer is maintained.
 		'''
 		new_node = Node(value)
 		self.length += 1
@@ -111,7 +114,7 @@ class SinglyLinkedList:
 
 	def delete(self, value):
 		''' 
-		Delete all values in a list. 
+		Delete all nodes with a given value. 
 		O(n) time and O(1) space
 		Time complexity cannot be reduced without a way to randomly access nodes.
 		'''
@@ -147,7 +150,7 @@ class SinglyLinkedList:
 		''' 
 		Returns count of the times target is found in the list.
 		O(n) time and O(1) space
-		Time complexity cannot be reduced without a way to randomly access nodes.
+		Reducing time complexity would require maintaining an additinal data structure.
 		'''
 		current = self.head
 		counter = 0
