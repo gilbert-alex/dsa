@@ -4,8 +4,7 @@ from doubly_linked_list import Node, DoublyLinkedList
 
 @pytest.fixture
 def empty_dll():
-    dll = DoublyLinkedList()
-    return dll
+    return DoublyLinkedList()
 
 
 @pytest.fixture
@@ -177,7 +176,7 @@ class TestDeleteFirst:
         assert dll.tail is None
 
 
-    def test_delete_raises_not_found(self, sample_dll):
+    def test_delete_unknown_raises_not_found(self, sample_dll):
         with pytest.raises(ValueError):
             sample_dll.delete_first(4)
 
@@ -234,19 +233,52 @@ class TestDeleteAll:
         assert dll.head is None
         assert dll.tail is None
 
-'''
-    # this is not implemented yet on the method
-    def test_delete_raises_not_found(self, sample_dll):
+    
+    def test_delete_unknown_raises_not_found(self, sample_dll):
         with pytest.raises(ValueError):
-            sample_dll.delete_all(4)
-'''
+            sample_dll.delete_all(9)
 
-class ComponentTest:
-    def test_component():
+
+class TestCount:
+    @pytest.mark.parametrize('values, target, expected', [
+        ([1, 2, 3], 1, 1),      # head
+        ([1, 2, 3], 3, 1),      # tail
+        ([1, 1, 2], 1, 2),      # sequential
+        ([1, 2, 1, 3], 1, 2),   # non-sequential
+        ([1, 1, 1], 1, 3),      # all
+        ([1, 2, 1], 1, 2),      # head and tail
+        ([1, 2, 3], 4, 0),      # none
+    ])
+    def test_count(self, values, target, expected):
+        dll = DoublyLinkedList()
+        for v in values:
+            dll.append(v)
+        assert dll.count(target) == expected
+
+
+class TestPositionsOf:
+    @pytest.mark.parametrize('values, target, expected', [
+        ([1, 2, 3], 1, [0]),            # head
+        ([1, 2, 3], 3, [2]),            # tail
+        ([1, 1, 2], 1, [0, 1]),         # sequential
+        ([1, 2, 1, 3], 1, [0, 2]),      # non-sequential
+        ([1, 1, 1], 1, [0, 1, 2]),      # all
+        ([1, 2, 1], 1, [0, 2]),         # head and tail
+        ([1, 2, 3], 4, []),             # none
+    ])
+    def test_positions_of(self, values, target, expected):
+        dll = DoublyLinkedList()
+        for v in values:
+            dll.append(v)
+        assert dll.positions_of(target) == expected
+
+
+class TestComponent:
+    def test_component(self):
         dll = DoublyLinkedList()
         assert dll.head is None
         assert dll.tail is None
-        assert dll.get_length() == 0
+        assert len(dll) == 0
 
         dll.append(2)
         assert dll.head.value == 2
@@ -258,26 +290,26 @@ class ComponentTest:
 
         for v in [3, 4, 5]:
             dll.append(v)
-        assert dll.get_length() == 5
+        assert len(dll) == 5
         assert dll.to_list() == [1, 2, 3, 4, 5]
         assert dll.head.value == 1
         assert dll.tail.value == 5
         
         dll.delete_first(1)
-        assert dll.get_length() == 4
+        assert len(dll) == 4
         assert dll.to_list() == [2, 3, 4, 5]
         assert dll.head.value == 2
         assert dll.tail.value == 5
 
         dll.delete_first(5)
-        assert dll.get_length() == 3
+        assert len(dll) == 3
         assert dll.to_list() == [2, 3, 4]
         assert dll.head.value == 2
         assert dll.tail.value == 4
 
         for v in dll.to_list():
             dll.delete_first(v)
-        assert dll.get_length() == 0
+        assert len(dll) == 0
         assert dll.to_list() == []
         assert dll.head == None
         assert dll.tail == None
@@ -292,6 +324,6 @@ class ComponentTest:
         dll.append(3)
         dll.delete_all(3)
         assert dll.to_list() == [2]
-        assert dll.get_length() == 1
+        assert len(dll) == 1
         assert dll.head.value == 2
         assert dll.head.value == 2
