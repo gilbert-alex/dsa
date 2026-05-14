@@ -4,8 +4,7 @@ from singly_linked_list import Node, SinglyLinkedList
 
 @pytest.fixture
 def empty_sll():
-    sll = SinglyLinkedList()
-    return sll
+    return SinglyLinkedList()
 
 
 @pytest.fixture
@@ -25,6 +24,7 @@ def test_node_initialization():
 def test_linkedlist_initialization():
     sll = SinglyLinkedList()
     assert sll.head is None
+    assert sll.tail is None
     assert sll.length == 0
     assert sll.to_list() == []
 
@@ -139,13 +139,13 @@ class TestAppendFast:
 
 class TestDelete: 
     @pytest.mark.parametrize('values, delete, expected', [
-        ([1, 2, 3, 4], 2, [1, 3, 4]),       # middle
-        ([1, 2, 3, 4], 1, [2, 3, 4]),       # head
-        ([1, 2, 3, 4], 4, [1, 2, 3]),       # tail
-        ([1, 2, 2, 3], 2, [1, 3]),          # multiple
-        ([1, 1, 2, 3], 1, [2, 3]),          # multiple at head
-        ([1, 2, 3, 3], 3, [1, 2]),          # multiple at tail
-        ([1, 2, 3, 2, 4], 2, [1, 3, 4]),    # multiple non-consecutive
+        ([1, 2, 3, 4], 2, [1, 3, 4]),           # middle
+        ([1, 2, 3, 4], 1, [2, 3, 4]),           # head
+        ([1, 2, 3, 4], 4, [1, 2, 3]),           # tail
+        ([1, 2, 2, 3], 2, [1, 2, 3]),           # multiple
+        ([1, 1, 2, 3], 1, [1, 2, 3]),           # multiple at head
+        ([1, 2, 3, 3], 3, [1, 2, 3]),           # multiple at tail
+        ([1, 2, 3, 2, 4], 2, [1, 3, 2, 4]),     # multiple non-consecutive
     ])
     def test_delete(self, values, delete, expected):
         sll = SinglyLinkedList()
@@ -186,6 +186,11 @@ class TestDelete:
         assert sll.tail is None
 
 
+    def test_delete_unknown_value_raises_error(self, sample_sll):
+        with pytest.raises(ValueError):
+            sample_sll.delete(9)
+
+
 class TestCount:
     @pytest.mark.parametrize('values, target, expected', [
         ([1, 2, 3], 1, 1),      # head
@@ -203,7 +208,7 @@ class TestCount:
         assert sll.count(target) == expected
 
 
-class TestSearch:
+class TestPositionsOf:
     @pytest.mark.parametrize('values, target, expected', [
         ([1, 2, 3], 1, [0]),            # head
         ([1, 2, 3], 3, [2]),            # tail
@@ -213,14 +218,14 @@ class TestSearch:
         ([1, 2, 1], 1, [0, 2]),         # head and tail
         ([1, 2, 3], 4, []),             # none
     ])
-    def test_search(self, values, target, expected):
+    def test_positions_of(self, values, target, expected):
         sll = SinglyLinkedList()
         for v in values:
             sll.append_fast(v)
-        assert sll.search(target) == expected
+        assert sll.positions_of(target) == expected
 
 
-class ComponentTest:
+class TestComponent:
     def test_component(self):
         sll = SinglyLinkedList()
         sll.append_fast(1)
@@ -230,6 +235,6 @@ class ComponentTest:
         sll.prepend(2)
         assert sll.to_list() == [2, 3, 1]
         assert sll.head.value == 2
-        assert sll.head.value.next == 3
+        assert sll.head.next.value == 3
         assert sll.tail.value == 1
         assert len(sll) == 3
