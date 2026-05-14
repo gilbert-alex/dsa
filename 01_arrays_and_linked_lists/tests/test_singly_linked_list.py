@@ -15,6 +15,20 @@ def sample_sll():
     return sll
 
 
+def _make_sll(*values):
+    sll = SinglyLinkedList()
+    for v in values:
+        node = Node(v)
+        if not sll.head:
+            sll.head = node
+            sll.tail = node
+        else:
+            sll.tail.next = node
+            sll.tail = node
+        sll.length += 1
+    return sll
+
+
 def test_node_initialization():
     n = Node(5)
     assert n.value == 5
@@ -81,8 +95,6 @@ class TestAppendSlow:
 
 
     def test_prepend_null_value(self, sample_sll):
-        #TODO: This really should be guarded differently in the sll.method
-        #TODO: Test with other non-integer datatypes
         with pytest.raises(TypeError):
             sample_sll.append_slow()
 
@@ -116,7 +128,6 @@ class TestAppendFast:
 
 
     def test_prepend_null_value(self, sample_sll):
-        #TODO: This really should be guarded differently in the sll.method
         with pytest.raises(TypeError):
             sample_sll.append_fast()
 
@@ -148,9 +159,7 @@ class TestDelete:
         ([1, 2, 3, 2, 4], 2, [1, 3, 2, 4]),     # multiple non-consecutive
     ])
     def test_delete(self, values, delete, expected):
-        sll = SinglyLinkedList()
-        for v in values:
-            sll.append_fast(v)
+        sll = _make_sll(*values)
         sll.delete(delete)
         assert sll.to_list() == expected
 
@@ -160,27 +169,20 @@ class TestDelete:
         assert len(sample_sll) == 2
 
 
-    def test_delete_head_updates_head_pointer(self):
-        sll = SinglyLinkedList()
-        for v in [1, 2, 3]:
-            sll.append_fast(v)
-        sll.delete(1)
-        assert sll.head.value == 2
-        assert sll.head.next.value == 3
+    def test_delete_head_updates_head_pointer(self, sample_sll):
+        sample_sll.delete(1)
+        assert sample_sll.head.value == 2
+        assert sample_sll.head.next.value == 3
 
 
-    def test_delete_tail_updates_tail_pointer(self):
-        sll = SinglyLinkedList()
-        for v in [1, 2, 3]:
-            sll.append_fast(v)
-        sll.delete(3)
-        assert sll.tail.value == 2
-        assert sll.tail.next is None
+    def test_delete_tail_updates_tail_pointer(self, sample_sll):
+        sample_sll.delete(3)
+        assert sample_sll.tail.value == 2
+        assert sample_sll.tail.next is None
         
 
     def test_delete_only_node_nulls_both_pointers(self):
-        sll = SinglyLinkedList()
-        sll.append_fast(1)
+        sll = _make_sll(1)
         sll.delete(1)
         assert sll.head is None
         assert sll.tail is None
@@ -202,9 +204,7 @@ class TestCount:
         ([1, 2, 3], 4, 0),      # none
     ])
     def test_count(self, values, target, expected):
-        sll = SinglyLinkedList()
-        for v in values:
-            sll.append_fast(v)
+        sll = _make_sll(*values)
         assert sll.count(target) == expected
 
 
@@ -219,9 +219,7 @@ class TestPositionsOf:
         ([1, 2, 3], 4, []),             # none
     ])
     def test_positions_of(self, values, target, expected):
-        sll = SinglyLinkedList()
-        for v in values:
-            sll.append_fast(v)
+        sll = _make_sll(*values)
         assert sll.positions_of(target) == expected
 
 

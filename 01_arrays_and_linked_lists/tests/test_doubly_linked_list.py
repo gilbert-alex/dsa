@@ -30,6 +30,21 @@ def test_initialization():
     assert dll.to_list() == []
 
 
+def _make_dll(*values):
+    dll = DoublyLinkedList()
+    for v in values:
+        node = Node(v)
+        if not dll.head:
+            dll.head = node
+            dll.tail = node
+        else:
+            dll.tail.next = node
+            node.previous = dll.tail
+            dll.tail = node
+        dll.length += 1
+    return dll
+
+
 class TestPrepend:
     def test_prepend_to_empty_list(self, empty_dll):
         empty_dll.prepend(1)
@@ -118,9 +133,7 @@ class TestDeleteFirst:
         ([1, 2, 3, 2, 4], 2, [1, 3, 2, 4]),     # multiple non-consecutive
     ])
     def test_delete_first(self, values, delete, expected):
-        dll = DoublyLinkedList()
-        for v in values:
-            dll.append(v)
+        dll = _make_dll(*values)
         dll.delete_first(delete)
         assert dll.to_list() == expected
 
@@ -135,9 +148,7 @@ class TestDeleteFirst:
         ([1, 2, 3, 2, 4], 2, [1, 2, 3, 4]),     # multiple non-consecutive
     ])
     def test_delete_first_from_end(self, values, delete, expected):
-        dll = DoublyLinkedList()
-        for v in values:
-            dll.append(v)
+        dll = _make_dll(*values)
         dll.delete_first(delete, from_end=True)
         assert dll.to_list() == expected
 
@@ -147,30 +158,23 @@ class TestDeleteFirst:
         assert len(sample_dll) == 2
 
 
-    def test_delete_head_updates_head_pointer(self):
-        dll = DoublyLinkedList()
-        for v in [1, 2, 3]:
-            dll.append(v)
-        dll.delete_first(1)
-        assert dll.head.value == 2
-        assert dll.head.previous is None
-        assert dll.head.next.value == 3
+    def test_delete_head_updates_head_pointer(self, sample_dll):
+        sample_dll.delete_first(1)
+        assert sample_dll.head.value == 2
+        assert sample_dll.head.previous is None
+        assert sample_dll.head.next.value == 3
 
 
-    def test_delete_tail_updates_tail_pointer(self):
-        dll = DoublyLinkedList()
-        for v in [1, 2, 3]:
-            dll.append(v)
-        dll.delete_first(3)
-        assert len(dll) == 2
-        assert dll.tail.value == 2
-        assert dll.tail.previous.value == 1
-        assert dll.tail.next is None
+    def test_delete_tail_updates_tail_pointer(self, sample_dll):
+        sample_dll.delete_first(3)
+        assert len(sample_dll) == 2
+        assert sample_dll.tail.value == 2
+        assert sample_dll.tail.previous.value == 1
+        assert sample_dll.tail.next is None
 
 
     def test_delete_only_node_nulls_both_pointers(self):
-        dll = DoublyLinkedList()
-        dll.append(1)
+        dll = _make_dll(1)
         dll.delete_first(1)
         assert dll.head is None
         assert dll.tail is None
@@ -193,9 +197,7 @@ class TestDeleteAll:
         ([1, 1], 1, []),                        # all
     ])
     def test_delete_all(self, values, delete, expected):
-        dll = DoublyLinkedList()
-        for v in values:
-            dll.append(v)
+        dll = _make_dll(*values)
         dll.delete_all(delete)
         assert dll.to_list() == expected
 
@@ -205,30 +207,23 @@ class TestDeleteAll:
         assert len(sample_dll) == 2
 
 
-    def test_delete_head_updates_head_pointer(self):
-        dll = DoublyLinkedList()
-        for v in [1, 2, 3]:
-            dll.append(v)
-        dll.delete_all(1)
-        assert dll.head.value == 2
-        assert dll.head.previous is None
-        assert dll.head.next.value == 3
+    def test_delete_head_updates_head_pointer(self, sample_dll):
+        sample_dll.delete_all(1)
+        assert sample_dll.head.value == 2
+        assert sample_dll.head.previous is None
+        assert sample_dll.head.next.value == 3
 
 
-    def test_delete_tail_updates_tail_pointer(self):
-        dll = DoublyLinkedList()
-        for v in [1, 2, 3]:
-            dll.append(v)
-        dll.delete_all(3)
-        assert len(dll) == 2
-        assert dll.tail.value == 2
-        assert dll.tail.previous.value == 1
-        assert dll.tail.next is None
+    def test_delete_tail_updates_tail_pointer(self, sample_dll):
+        sample_dll.delete_all(3)
+        assert len(sample_dll) == 2
+        assert sample_dll.tail.value == 2
+        assert sample_dll.tail.previous.value == 1
+        assert sample_dll.tail.next is None
 
 
     def test_delete_only_node_nulls_both_pointers(self):
-        dll = DoublyLinkedList()
-        dll.append(1)
+        dll = _make_dll(1)
         dll.delete_all(1)
         assert dll.head is None
         assert dll.tail is None
@@ -250,9 +245,7 @@ class TestCount:
         ([1, 2, 3], 4, 0),      # none
     ])
     def test_count(self, values, target, expected):
-        dll = DoublyLinkedList()
-        for v in values:
-            dll.append(v)
+        dll = _make_dll(*values)
         assert dll.count(target) == expected
 
 
@@ -267,9 +260,7 @@ class TestPositionsOf:
         ([1, 2, 3], 4, []),             # none
     ])
     def test_positions_of(self, values, target, expected):
-        dll = DoublyLinkedList()
-        for v in values:
-            dll.append(v)
+        dll = _make_dll(*values)
         assert dll.positions_of(target) == expected
 
 
