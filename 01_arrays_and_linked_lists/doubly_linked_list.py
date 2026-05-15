@@ -205,11 +205,6 @@ class DoublyLinkedList:
         return result
 
 
-    def _build_parts(self) -> list[str]:
-        #TODO: implement from __repr__ and __str__ and to_list()
-        pass
-
-
 if __name__ == "__main__":
     dll = DoublyLinkedList()
     dll.append(1)

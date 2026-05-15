@@ -317,4 +317,4 @@ class TestComponent:
         assert dll.to_list() == [2]
         assert len(dll) == 1
         assert dll.head.value == 2
-        assert dll.head.value == 2
+        assert dll.tail.value == 2
