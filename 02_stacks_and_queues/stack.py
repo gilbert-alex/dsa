@@ -1,4 +1,7 @@
-class Stack:
+from ../01_arrays_and_linked_lists import SinglyLinkedList
+
+
+class ListStack:
     '''
     Implements a LIFO array which pushes and pops from the nth index
     where n is the length of the array -1.
@@ -30,3 +33,24 @@ class Stack:
 
     def __repr__(self):
         return f"Stack({self._data})"
+
+
+class LinkedListStack:
+    '''
+    Implements a LIFO data structure using a singly linked list.
+    '''
+    def __init__(self):
+        self._data = SinglyLinkedList()
+
+
+    def __str__(self)):
+        parts = [str(v) for v in self._data.to_list()]
+
+    def push(self, value):
+        self._data.append_fast(value)
+        
+
+if __name__ == "__main__":
+    lls = LinkedListStack()
+    lls.push(10)
+    print(lls)
