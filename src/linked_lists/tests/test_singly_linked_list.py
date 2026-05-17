@@ -1,5 +1,5 @@
 import pytest
-from singly_linked_list import Node, SinglyLinkedList
+from ..singly_linked_list import Node, SinglyLinkedList
 
 
 @pytest.fixture

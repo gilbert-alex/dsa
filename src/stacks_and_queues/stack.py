@@ -1,4 +1,4 @@
-from ../01_arrays_and_linked_lists import SinglyLinkedList
+from linked_lists.singly_linked_list import SinglyLinkedList
 
 
 class ListStack:
@@ -43,8 +43,10 @@ class LinkedListStack:
         self._data = SinglyLinkedList()
 
 
-    def __str__(self)):
+    def __str__(self):
         parts = [str(v) for v in self._data.to_list()]
+        parts.append('None')
+        return f'Parts= {" -> ".join(parts)}'
 
     def push(self, value):
         self._data.append_fast(value)

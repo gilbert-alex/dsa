@@ -1,5 +1,5 @@
 import pytest
-from doubly_linked_list import Node, DoublyLinkedList
+from ..doubly_linked_list import Node, DoublyLinkedList
 
 
 @pytest.fixture

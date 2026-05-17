@@ -1,3 +1,8 @@
 __pycache__/
 *.py[codz]
 .venv
+
+
+# Package build artifacts
+src/*.egg-info/
+
