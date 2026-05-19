@@ -34,34 +34,63 @@ def test_initialization():
 class TestPush():
     def test_push_to_empty_stack(self, empty_ls):
         empty_ls.push(1)
-        assert empty_ls._data == [1]
+        assert empty_ls.peek() == 1
+        assert empty_ls.is_empty() == False
+        assert len(empty_ls) == 1
 
 
     def test_push_to_existing_stack(self, sample_ls):
         sample_ls.push(4)
-        assert sample_ls._data == [1, 2, 3, 4]
+        assert sample_ls.peek() == 4
+        assert sample_ls.is_empty() == False
+        assert len(sample_ls) == 4
     
+
+    def test_push_increments_length(self, sample_ls):
+        before = len(sample_ls)
+        sample_ls.push(4)
+        after = len(sample_ls)
+        assert before - after == -1
+
     
 class TestPop():
-    @pytest.mark.parametrize('values, expected', [
-        ([1, 2, 3, 4], [1, 2, 3]),           # ascending
-        ([1, 2, 3, 3], [1, 2, 3]),           # duplicate
-        ([4, 3, 2, 1], [4, 3, 2]),           # decending
-        ([1, 2, 3, -1], [1, 2, 3]),          # negative
-        ([1, 2, 3, 'four'], [1, 2, 3]),      # string
+    @pytest.mark.parametrize('values, new_top, new_len', [
+        ([1, 2, 3], 2, 2),                  # ascending
+        ([1, 2, 2], 2, 2),                  # duplicate
+        ([4, 3, 2], 3, 2),                  # decending
+        ([-1, -2, -3], -2, 2),              # negative
+        ([2, 1, 0], 1, 2),                  # zero
+        (['a', 'b', 'c'], 'b', 2),          # string
     ])
-    def test_pop(self, values, expected):
+    def test_pop_removes_top_value(self, values, new_top, new_len):
         ls = _make_ls(*values)
         ls.pop()
-        assert ls._data == expected
+        assert ls.peek() == new_top
+        assert len(ls) == new_len
 
 
-    def test_pop_from_stack(self, sample_ls):
+    def test_pop_returns_value(self, sample_ls):
         popped = sample_ls.pop()
         assert popped == 3
-        assert sample_ls._data == [1, 2]
 
 
-    def test_pop_from_empty_stack(self, empty_ls):
+    def test_pop_decrements_length(self, sample_ls):
+        before = len(sample_ls)
+        sample_ls.pop()
+        after = len(sample_ls)
+        assert before - after == 1
+
+
+    def test_pop_from_empty_raises_error(self, empty_ls):
         with pytest.raises(IndexError):
             empty_ls.pop()
+
+
+class TestPeek():
+    def test_peek_returns_value(self, sample_ls):
+        assert sample_ls.peek() == 3
+
+
+    def test_peek_from_empty_raises_error(self, empty_ls):
+        with pytest.raises(IndexError):
+            empty_ls.peek()
