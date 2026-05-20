@@ -1,10 +1,10 @@
 import pytest
-from ..stack import ListStack
+from ..stack import LinkedListStack
 
 
 @pytest.fixture
 def empty_ls():
-    return ListStack()
+    return LinkedListStack()
 
 
 @pytest.fixture
@@ -13,13 +13,14 @@ def sample_ls():
 
 
 def _make_ls(*values):
-    ls = ListStack()
-    ls._data = list(values)
+    ls = LinkedListStack()
+    for v in values:
+        ls._data.prepend(v)
     return ls
 
 
 def test_initialization():
-    ls = ListStack()
+    ls = LinkedListStack()
     assert len(ls) == 0
     assert ls.is_empty()
     with pytest.raises(IndexError):
@@ -51,17 +52,18 @@ class TestPush():
 
     
 class TestPop():
-    @pytest.mark.parametrize('values, new_top, new_len', [
-        ([1, 2, 3], 2, 2),                  # ascending
-        ([1, 2, 2], 2, 2),                  # duplicate
-        ([4, 3, 2], 3, 2),                  # decending
-        ([-1, -2, -3], -2, 2),              # negative
-        ([2, 1, 0], 1, 2),                  # zero/falsy
-        (['a', 'b', 'c'], 'b', 2),          # string
+    @pytest.mark.parametrize('values, new_top, new_len, popped', [
+        ([1, 2, 3], 2, 2, 3),                   # ascending
+        ([1, 2, 2], 2, 2, 2),                   # duplicate
+        ([4, 3, 2], 3, 2, 2),                   # decending
+        ([-1, -2, -3], -2, 2, -3),              # negative
+        ([2, 1, 0], 1, 2, 0),                   # zero/falsy
+        (['a', 'b', 'c'], 'b', 2, 'c'),         # string
     ])
-    def test_pop_removes_top_value(self, values, new_top, new_len):
+    def test_pop_removes_top_value(self, values, new_top, new_len, popped):
         ls = _make_ls(*values)
-        ls.pop()
+        p = ls.pop()
+        assert p == popped
         assert ls.peek() == new_top
         assert len(ls) == new_len
 

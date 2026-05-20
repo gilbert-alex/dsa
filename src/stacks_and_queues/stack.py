@@ -8,7 +8,9 @@ from linked_lists.singly_linked_list import SinglyLinkedList
 class ListStack:
     '''
     A LIFO stack implemented on a Python list. This structure operates on 
-    the n-th index of the list where n is the length - 1.
+    the n-th index of the list where n is the length - 1. The methods __str__ and
+    __repr__ reverse the native implementation of the Python list to be a more
+    intuitive string representation of a stack.
     Assuming the Python list itself operates at O(1) time, this representation 
     of a stack also operates at O(1) time complexity for both insertion 
     and deletion operations.
@@ -19,13 +21,21 @@ class ListStack:
 
 
     def __repr__(self):
-        return f"Stack({self._data})"
+        '''
+        As this implementation appends new items on the right side of the 
+        Python list, this string similarly displays the top of the stack 
+        on the right side.
+        '''
+        #"!r" is the equavalent of "repr(d) for d in self._data"
+        return f"Stack({self._data!r})"
 
 
     def __str__(self):
-        parts = self._data
-        parts.reverse()
-        return f"Top -> {parts}"
+        '''
+        Reversed string to the more logical display order.
+        '''
+        parts = [repr(v) for v in reversed(self._data)]
+        return f"Top -> {' -> '.join(parts)}"
 
 
     def __len__(self):
@@ -55,7 +65,7 @@ class ListStack:
 class LinkedListStack:
     '''
     A LIFO stack implemented on a singly linked list. This structure operates on 
-    the n-th index of the list where n is the length - 1.
+    the 0-th index of the list.
     This representation of a stack operates at O(1) time complexity for both 
     insertion and deletion operations.
     '''
@@ -64,17 +74,21 @@ class LinkedListStack:
 
 
     def __repr__(self):
-        pass
+        '''
+        The base linked list builds with a prepend method such that the 
+        top of the Stack is always at the Linked List head.
+        '''
+        parts = [repr(v) for v in self._data.to_list()]
+        return f"Stack([{', '.join(parts)}])"
 
 
     def __str__(self):
-        parts = [str(v) for v in self._data.to_list()]
-        parts.append('None')
-        return f'Parts= {" -> ".join(parts)}'
+        parts = [repr(v) for v in self._data.to_list()]
+        return f"top -> {' -> '.join(parts)}"
 
 
     def __len__(self):
-        return self._data.__len__()
+        return len(self._data)
 
 
     def push(self, value):
@@ -82,27 +96,51 @@ class LinkedListStack:
         
 
     def pop(self):
+        '''
+        It's probably cleaner to create a "delete_head" method on the linked list
+        instead of relying on this peek and pop combo.
+        I dont have to worry about popping a value not in the list because
+        the popped value is not from user input.
+        '''
+        if self.is_empty():
+            raise IndexError('Stack is empty')
+
         top = self.peek()
         self._data.delete(top)
-        return(last)
+        return(top)
 
 
     def peek(self):
-        if not self._data.head.value:
+        if self.is_empty():
             raise IndexError('Stack is empty')
 
-        return self._data.tail.value
+        return self._data.head.value
+
+
+    def is_empty(self) -> bool:
+        return True if self._data.head is None else False
+
 
 if __name__ == "__main__":
-
-    print('---')
+    # list backed stack debug
+    print('ListStack:')
     ls = ListStack()
-    for v in [50, 60, 70]:
+    for v in [1, 2, 3, '4', 'five', '', 10]:
         ls.push(v)
+    print(ls)
     print(repr(ls))
+    removed = ls.pop()
+    print(f'removed: {removed}')
     print(ls)
 
+    print('---')
+    # linked list backed stack debug
+    print('LinkedListStack:')
     lls = LinkedListStack()
-    for v in [10, 20, 30]:
+    for v in [10, 20, 30, '40', 'fifty', '', 100]:
         lls.push(v)
+    print(lls)
+    print(repr(lls))
+    popped = lls.pop()
+    print(f'removed: {popped}')
     print(lls)
