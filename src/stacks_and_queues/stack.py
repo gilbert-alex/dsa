@@ -8,9 +8,9 @@ from linked_lists.singly_linked_list import SinglyLinkedList
 class ListStack:
     '''
     A LIFO stack implemented on a Python list. This structure operates on 
-    the n-th index of the list where n is the length - 1. The methods __str__ and
-    __repr__ reverse the native implementation of the Python list to be a more
-    intuitive string representation of a stack.
+    the n-th index of the list where n is the length - 1. 
+    The __str__ method reverses the native ordering of the Python list to 
+    show a more intuitive string representation of a stack.
     Assuming the Python list itself operates at O(1) time, this representation 
     of a stack also operates at O(1) time complexity for both insertion 
     and deletion operations.
@@ -49,12 +49,14 @@ class ListStack:
     def pop(self) -> Any:
         if self.is_empty():
             raise IndexError("stack is empty")
+
         return self._data.pop()
 
 
     def peek(self) -> Any:
         if self.is_empty():
             raise IndexError("stack is empty")
+
         return self._data[-1]
 
 
