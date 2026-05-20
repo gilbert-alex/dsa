@@ -12,9 +12,9 @@ def sample_ls():
     return _make_ls(1, 2, 3)
 
 
-def _make_ls(*values):
+def _make_ls(*items):
     ls = ListStack()
-    ls._data = list(values)
+    ls._data = list(items)
     return ls
 
 
@@ -51,22 +51,23 @@ class TestPush():
 
     
 class TestPop():
-    @pytest.mark.parametrize('values, new_top, new_len', [
-        ([1, 2, 3], 2, 2),                  # ascending
-        ([1, 2, 2], 2, 2),                  # duplicate
-        ([4, 3, 2], 3, 2),                  # decending
-        ([-1, -2, -3], -2, 2),              # negative
-        ([2, 1, 0], 1, 2),                  # zero/falsy
-        (['a', 'b', 'c'], 'b', 2),          # string
+    @pytest.mark.parametrize('items, new_top, new_len, popped', [
+        ([1, 2, 3], 2, 2, 3),                   # ascending
+        ([2, 2, 2], 2, 2, 2),                   # duplicate
+        ([4, 3, 2], 3, 2, 2),                   # decending
+        ([-1, -2, -3], -2, 2, -3),              # negative
+        ([2, 1, 0], 1, 2, 0),                   # zero/falsy
+        (['a', 'b', 'c'], 'b', 2, 'c'),         # string
     ])
-    def test_pop_removes_top_value(self, values, new_top, new_len):
-        ls = _make_ls(*values)
-        ls.pop()
+    def test_pop_removes_top_item(self, items, new_top, new_len, popped):
+        ls = _make_ls(*items)
+        p = ls.pop()
+        assert p == popped
         assert ls.peek() == new_top
         assert len(ls) == new_len
 
 
-    def test_pop_returns_value(self, sample_ls):
+    def test_pop_returns_item(self, sample_ls):
         popped = sample_ls.pop()
         assert popped == 3
 
@@ -84,7 +85,7 @@ class TestPop():
 
 
 class TestPeek():
-    def test_peek_returns_value(self, sample_ls):
+    def test_peek_returns_item(self, sample_ls):
         assert sample_ls.peek() == 3
 
 

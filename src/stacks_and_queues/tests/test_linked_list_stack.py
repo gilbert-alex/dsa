@@ -12,9 +12,9 @@ def sample_ls():
     return _make_ls(1, 2, 3)
 
 
-def _make_ls(*values):
+def _make_ls(*items):
     ls = LinkedListStack()
-    for v in values:
+    for v in items:
         ls._data.prepend(v)
     return ls
 
@@ -52,7 +52,7 @@ class TestPush():
 
     
 class TestPop():
-    @pytest.mark.parametrize('values, new_top, new_len, popped', [
+    @pytest.mark.parametrize('items, new_top, new_len, popped', [
         ([1, 2, 3], 2, 2, 3),                   # ascending
         ([1, 2, 2], 2, 2, 2),                   # duplicate
         ([4, 3, 2], 3, 2, 2),                   # decending
@@ -60,15 +60,15 @@ class TestPop():
         ([2, 1, 0], 1, 2, 0),                   # zero/falsy
         (['a', 'b', 'c'], 'b', 2, 'c'),         # string
     ])
-    def test_pop_removes_top_value(self, values, new_top, new_len, popped):
-        ls = _make_ls(*values)
+    def test_pop_removes_top_item(self, items, new_top, new_len, popped):
+        ls = _make_ls(*items)
         p = ls.pop()
         assert p == popped
         assert ls.peek() == new_top
         assert len(ls) == new_len
 
 
-    def test_pop_returns_value(self, sample_ls):
+    def test_pop_returns_item(self, sample_ls):
         popped = sample_ls.pop()
         assert popped == 3
 
@@ -86,7 +86,7 @@ class TestPop():
 
 
 class TestPeek():
-    def test_peek_returns_value(self, sample_ls):
+    def test_peek_returns_item(self, sample_ls):
         assert sample_ls.peek() == 3
 
 

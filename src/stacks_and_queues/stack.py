@@ -34,8 +34,8 @@ class ListStack:
         '''
         Reversed string to the more logical display order.
         '''
-        parts = [repr(v) for v in reversed(self._data)]
-        return f"Top -> {' -> '.join(parts)}"
+        items = [repr(v) for v in reversed(self._data)]
+        return f"Top -> {' -> '.join(items)}"
 
 
     def __len__(self):
@@ -80,29 +80,29 @@ class LinkedListStack:
         The base linked list builds with a prepend method such that the 
         top of the Stack is always at the Linked List head.
         '''
-        parts = [repr(v) for v in self._data.to_list()]
-        return f"Stack([{', '.join(parts)}])"
+        items = [repr(v) for v in self._data.to_list()]
+        return f"Stack([{', '.join(items)}])"
 
 
     def __str__(self):
-        parts = [repr(v) for v in self._data.to_list()]
-        return f"top -> {' -> '.join(parts)}"
+        items = [repr(v) for v in self._data.to_list()]
+        return f"top -> {' -> '.join(items)}"
 
 
     def __len__(self):
         return len(self._data)
 
 
-    def push(self, value):
-        self._data.prepend(value)
+    def push(self, item):
+        self._data.prepend(item)
         
 
     def pop(self):
         '''
         It's probably cleaner to create a "delete_head" method on the linked list
         instead of relying on this peek and pop combo.
-        I dont have to worry about popping a value not in the list because
-        the popped value is not from user input.
+        I dont have to worry about popping an item not in the list because
+        this method does not depend on user input.
         '''
         if self.is_empty():
             raise IndexError('Stack is empty')
