@@ -66,9 +66,11 @@ class ListQueue:
 class LinkedListQueue:
     '''
     A FIFO queue implemented on a singly linked list. This structure enqueues on 
-    the right and dequeues on the left. This design is necessary because the 
-    underlying Linked List is only capable of deleting the first from left, or all, 
-    occurances of a target item's value. 
+    the right and dequeues on the left. 
+    This design is necessunderlying Linked List is only capable of deleting the 
+    first from left, or all, occurances of a target item's value. 
+    
+    Note - if I change to the Doubly Linked List backing:
     The underlying Linked List maintains a previous node reference pointer; therefore, 
     this representation of a queue operates at O(1) time complexity for both insertion 
     and deletion operations.
@@ -79,12 +81,12 @@ class LinkedListQueue:
 
     def __repr__(self):
         items = [repr(v) for v in self._data.to_list()]
-        return f"Stack([{', '.join(items)}])"
+        return f"Queue([{', '.join(items)}])"
 
 
     def __str__(self):
         items = [repr(v) for v in self._data.to_list()]
-        return f"top -> {' -> '.join(items)}"
+        return f"Front -> {' -> '.join(items)}"
 
 
     def __len__(self):

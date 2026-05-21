@@ -86,7 +86,7 @@ class LinkedListStack:
 
     def __str__(self):
         items = [repr(v) for v in self._data.to_list()]
-        return f"top -> {' -> '.join(items)}"
+        return f"Top -> {' -> '.join(items)}"
 
 
     def __len__(self):
