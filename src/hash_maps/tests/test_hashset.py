@@ -8,8 +8,18 @@ def default_hs():
 
 
 @pytest.fixture
+def hs_10():
+    return HashSet(10)
+
+
+@pytest.fixture
 def hs_100():
     return HashSet(100)
+
+
+@pytest.fixture
+def hs_127():
+    return HashSet(127)
 
 
 def _make_hs(*items):
@@ -26,31 +36,61 @@ class TestSet:
 
 
 class TestHash:
-    @pytest.mark.parametrize('values, expected', [
-        ('a', 1),
-        ('A', 1),
-        ('b', 2),
-        ('B', 2),
-        ('z', 2),
-        ('ab', 3),
+    @pytest.mark.parametrize('strings, expected', [
         ('0', 0),
-        ('1', 1),
-        ('012', 3),
-        (' ', 0),
+        ('7', 7),
+        ('8', 0),
     ])
-    def test_default_hash(self, values, expected, default_hs):
-        assert default_hs._hash(values) == expected
+    def test_wrap(self, strings, expected, default_hs):
+        assert default_hs._hash(strings) == expected
 
 
-    @pytest.mark.parametrize('values, expected', [
+    @pytest.mark.parametrize('strings, expected', [
+        ('a', 97),
+        ('A', 97),
+        ('b', 98),
+        ('B', 98),
+        ('z', 122),
+        ('Z', 122),
+        ('0', 48),
+        ('9', 57),
+        (' ', 32),
+    ])
+    def test_ascii_characters(self, strings, expected, hs_127):
+        assert hs_127._hash(strings) == expected
+
+
+    @pytest.mark.parametrize('strings, expected', [
+        ('0', 8), ('1', 9), ('2', 0), ('3', 1), ('4', 2), 
+        ('5', 3), ('6', 4), ('7', 5), ('8', 6), ('9', 7),
+        ('012', 7),
+        ('123', 0),
+    ])
+    def test_numeric(self, strings, expected, hs_10):
+        assert hs_10._hash(strings) == expected
+
+
+    @pytest.mark.parametrize('strings, expected', [
         ('apple', 30),
+        ('APPLE', 30),
     ])
-    def test_small_hash(self, values, expected, hs_100):
-        assert hs_100._hash(values) == expected
+    def test_words(self, strings, expected, hs_100):
+        assert hs_100._hash(strings) == expected
+
+
+    @pytest.mark.parametrize('strings, expected', [
+        (' ', 32),
+        ('two words', 37),
+        ('hyphenated-word', 55),
+        ("apostrophe's", 47),
+    ])
+    def test_edge_cases(self, strings, expected, hs_100):
+        assert hs_100._hash(strings) == expected
+
 
 
 class TestFindEmptyBucket:
-    @pytest.mark.parametrize('values, index, expected', [
+    @pytest.mark.parametrize('strings, index, expected', [
         ([], 0, 1),                         # expected [1] not [0]
         ([*range(0, 1)], 0, 1),
         ([*range(0, 7)], 0, 7),
@@ -58,8 +98,8 @@ class TestFindEmptyBucket:
         ([0, 2, 3, 4, 5, 7], 2, 6),         # search right
         ([1, 2, 3, 4, 5, 6, 7], 1, 0),      # wraps
     ])
-    def test_find_empty_bucket(self, values, index, expected):
-        hs = _make_hs(*values)
+    def test_find_empty_bucket(self, strings, index, expected):
+        hs = _make_hs(*strings)
         assert hs._find_empty_bucket(index) == expected
 
     

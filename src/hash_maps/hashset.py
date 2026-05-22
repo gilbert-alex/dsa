@@ -60,7 +60,7 @@ class HashSet():
         chars = list(value)
 
         for char in chars:
-            buffer += ord(char.lower()) % self._capacity
+            buffer = (buffer + ord(char.lower())) % self._capacity
         return buffer
 
 
