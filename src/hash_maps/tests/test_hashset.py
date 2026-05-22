@@ -31,8 +31,41 @@ def _make_hs(*items):
 
 
 class TestSet:
+    def test_set_increments_len(self, default_hs):
+        before = len(default_hs)
+        default_hs.set('a')
+        after = len(default_hs)
+        assert after == before + 1
+
+        
     def test_set_to_empty_hs(self, default_hs):
-        pass
+        default_hs.set('test')
+        assert len(default_hs) == 1
+
+
+    def test_set_duplicate_values(self, default_hs):
+        for s in ['test'] * 2:
+            default_hs.set(s)
+        assert len(default_hs) == 2
+
+
+    @pytest.mark.parametrize('values', [
+        ('string'),
+        ('alphanumeric100'),
+        (100),
+        (-100),
+        (1,000),
+        (-1,000),
+        (1),
+        (0),
+        (False),
+        (True),
+        (' '),
+        (None),
+    ])
+    def test_set_datatypes(self, values, default_hs):
+        default_hs.set(values)
+        assert len(default_hs) == 1
 
 
 class TestHash:

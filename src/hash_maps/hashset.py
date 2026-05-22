@@ -32,19 +32,33 @@ class HashSet():
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
         self._capacity = capacity
-        self._len = 0
+        self._count = 0
         self._buckets: list[Node | None] = [None] * self._capacity
+
+
+    def __str__(self):
+        pass
+
+
+    def __repr__(self):
+        pass
+
+
+    def __len__(self):
+        return self._count
 
 
     def set(self, value: Any) -> None:
         node = Node(value)
         index = self._hash(str(value))
-        value = self._buckets[index]
+        existing_value = self._buckets[index]
 
-        if value is None:
+        if existing_value is None:
             self._buckets[index] = node
         else:
             self._buckets[self._find_empty_bucket(index)] = node
+
+        self._count += 1
 
 
     def get(self, value: Any) -> Any:
@@ -84,5 +98,8 @@ class HashSet():
         ''' Increment index with wrap '''
         return (index + 1) % self._capacity
 
+
+    def _dispatch_resize(self) -> bool:
+        load_factor = 
     def _resize(self) -> None:
         pass
