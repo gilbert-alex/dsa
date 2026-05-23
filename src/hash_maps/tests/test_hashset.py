@@ -24,14 +24,14 @@ def hs_127():
 
 def _make_hs(*items):
     hs = HashSet()
-    hs._len = len(items)
+    hs._count = len(items)
     for i in items:
         hs._buckets[i] = i
     return hs
 
 
 class TestSet:
-    def test_set_increments_len(self, default_hs):
+    def test_set_increments_count(self, default_hs):
         before = len(default_hs)
         default_hs.set('a')
         after = len(default_hs)
@@ -156,3 +156,39 @@ class TestGetNextIndex:
     def test_get_next_bucket(self, index, expected):
         hs = _make_hs(*range(4))
         assert hs._get_next_index(index) == expected
+
+
+class TestResize:
+    def test_no_load(self, default_hs):
+        signal = default_hs._is_resize_required()           # mimic first set call
+        assert signal == False
+
+
+    def test_last_acceptable_load(self, default_hs):
+        for i in range(0,4):
+            default_hs.set(i)
+        assert default_hs._is_resize_required() == False    # mimic a new set call
+
+    def test_unacceptable_load(self, default_hs):
+        for i in range(0,5):
+            signal = default_hs.set(i)
+        assert default_hs._is_resize_required() == True
+
+
+class TestResizeRaises:
+    ''' I dont like the way _is_resize_required is used from set. The if statement guard
+        is logical and seems fine until the unit tests require testing this seemingly
+        indirect state. 
+
+        I dont think that set should be responsible for checking the load factor and/or resizing, but it does happen together. Should a try/except block be used in set wherein _is_resize_requires() raises an error which is subsequently caught to 
+        call resize? is that more testable? 
+
+        Simply passing a count param to _is_resize_required(self, count) sould result in a 
+        cleaner unit test (by not adding 1) but that would break the single use principle of
+        set. Should an orgistration method encapsulate set, _is_resize_required, and _resize
+        into it's own block? Is this parent method the correct place for a try catch block? 
+    '''
+    def test_unwritten_function_to_raise_error(self, default_hs):
+        with pytest.raises(ValueError):
+            # this is unwirtten & 6 is = 75% of 8. 
+            default_hs._is_resize_required_raises(count = 6)

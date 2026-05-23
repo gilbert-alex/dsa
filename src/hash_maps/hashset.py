@@ -27,7 +27,7 @@ class HashSet():
     '''
 
     DEFAULT_CAPACITY = 8
-    CAPACITY = .75
+    MAX_LOAD = .75
     
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
@@ -49,6 +49,10 @@ class HashSet():
 
 
     def set(self, value: Any) -> None:
+
+        if self._is_resize_required():
+            self._resize()
+
         node = Node(value)
         index = self._hash(str(value))
         existing_value = self._buckets[index]
@@ -99,7 +103,17 @@ class HashSet():
         return (index + 1) % self._capacity
 
 
-    def _dispatch_resize(self) -> bool:
-        load_factor = 
+    def _is_resize_required(self) -> bool:
+        '''
+        Called before setting a new node. This is called before the new node is 
+        set to a bucket, so 1 is added to count to avoid an invalid state after 
+        execution. 
+        If true, this method will call self_resize().
+        '''
+        expected_count = self._count + 1
+        load_factor = expected_count / self._capacity
+        return True if load_factor >= HashSet.MAX_LOAD else False
+
+
     def _resize(self) -> None:
         pass
