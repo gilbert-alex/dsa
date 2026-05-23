@@ -34,7 +34,6 @@ class TestSet:
     def test_set_as_component(self, default_hs):
         hs = default_hs
 
-        # check defaults
         capacity_default = hs._capacity
         count_default = hs._count
         assert capacity_default == 8
@@ -48,6 +47,18 @@ class TestSet:
         hs.set('this should cause a resize')
         assert hs._capacity == capacity_default * 2
         assert hs._count == 6
+
+
+class TestGet:
+    @pytest.mark.parametrize('strings, target, expected', [
+        ([*range(0, 8)], 0, 0),          # first index
+        ([*range(0, 8)], 7, 7),          # last index
+        ([*range(0, 8)], 2, 2),          # start in middle
+        ([*range(0, 8)], 1, 1),          # wraps
+    ])
+    def test_get_returns_found(self, strings, target, expected):
+        hs = _make_hs(*strings)
+        assert hs.get(target) == expected
 
 
 class TestHash:
@@ -108,7 +119,7 @@ class TestFindEmptyBucket:
         ([], 0, 1),                         # expected [1] not [0]
         ([*range(0, 1)], 0, 1),
         ([*range(0, 7)], 0, 7),
-        ([0, 1, 2, 3, 5, 6, 7], 0, 4),      # 4th index
+        ([0, 1, 2, 3, 5, 6, 7], 0, 4),      # 5th index
         ([0, 2, 3, 4, 5, 7], 2, 6),         # search right
         ([1, 2, 3, 4, 5, 6, 7], 1, 0),      # wraps
     ])
@@ -122,6 +133,35 @@ class TestFindEmptyBucket:
         with pytest.raises(ValueError):
             hs._find_empty_bucket(0)
 
+
+class TestScan:
+    @pytest.mark.parametrize('strings, start, target, expected', [
+        ([*range(0, 8)], 1, 0, 0),          # return first index
+        ([*range(0, 8)], 0, 7, 7),          # return last index
+        ([*range(0, 8)], 1, 2, 2),          # start in middle
+        ([*range(0, 8)], 4, 1, 1),          # wraps
+    ])
+    def test_scan(self, strings, start, target, expected):
+        hs = _make_hs(*strings)
+        assert hs._scan(start, target) == expected
+
+
+    def test_scan_not_return_start(self):
+        hs = _make_hs(*range(0, 7))
+        with pytest.raises(ValueError):
+            hs._scan(0, 0)
+
+
+    def test_scan_not_wrap_to_start(self):
+        hs = _make_hs(*range(0, 7))
+        with pytest.raises(ValueError):
+            hs._scan(2, 2)
+    '''
+    def test_full_buckets_raise(self):
+        hs = _make_hs(*range(0,8))
+        with pytest.raises(ValueError):
+            hs._find_empty_bucket(0)
+    '''
 
 class TestGetNextIndex:
     @pytest.mark.parametrize('index, expected', [

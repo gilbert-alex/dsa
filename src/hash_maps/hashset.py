@@ -36,12 +36,30 @@ class HashSet():
         self._buckets: list[Node | None] = [None] * self._capacity
 
 
-    def __str__(self):
-        pass
+    def __str__(self) -> str:
+        load_factor = self._count / self._capacity
+
+        header = (
+                f"capacity  : {self._capacity}\n"
+                f"count     : {self._count}\n"
+                f"load      : {load_factor:.2f}\n"
+                )
+
+        pairs = {
+                index: node.value
+                for index, node in enumerate(self._buckets)
+                if node is not None
+                }
+
+        return header + str(pairs)
 
 
     def __repr__(self):
-        pass
+        return (
+                f"capacity  : {self._capacity}\n"
+                f"count     : {self._count}\n"
+                f"load      : {self._count / self._capacity:.2f}\n"
+                )
 
 
     def __len__(self):
@@ -60,8 +78,16 @@ class HashSet():
         self._insert(value)
 
 
-    def get(self, value: Any) -> Any:
-        pass
+    def get(self, target: Any) -> Any:
+        index = self._hash(str(target))
+        result = self._buckets[index]
+
+        if result == target:
+            return result 
+        elif result is None:
+            raise ValueError(f'{target} not found')
+        else:
+            return self._scan(index, target)
 
 
     def delete(self, value: Any) -> Any:
@@ -96,12 +122,34 @@ class HashSet():
         raise ValueError('All buckets are full')
 
 
-    def _get_next_index(self, index):
+    #TODO:
+    #def _scan(self, start: int, target: Any | None = None) -> int:
+        ''' Linear search for target value from starting index.
+            Omit the target parameter to scan for the next empty bucket.
+        '''
+    def _scan(self, start: int, target: Any) -> int:
+        ''' Simpler API than the commented out def above.
+            This is temporary until I can fold _find_empty_bucket into scan.
+            
+            Finds previously set values; not empty buckets. For use by get()
+            and delete(). 
+        '''
+        next = self._get_next_index(start)
+
+        while next != start:
+            if self._buckets[next] is target:
+                return next
+            next = self._get_next_index(next)
+
+        raise ValueError(f'{target} not found')
+
+
+    def _get_next_index(self, index: int) -> int:
         ''' Increment index with wrap '''
         return (index + 1) % self._capacity
 
 
-    def _insert(self, value: Any):
+    def _insert(self, value: Any) -> None:
         node = Node(value)
         index = self._hash(str(value))
         existing_value = self._buckets[index]
@@ -133,3 +181,11 @@ class HashSet():
             if b is not None:
                 self._insert(b.value)
 
+
+if __name__ == "__main__":
+    hs = HashSet()
+    hs.set(1)
+    hs.set(0)
+    hs.set(6)
+    print(hs)
+    print(repr(hs))
