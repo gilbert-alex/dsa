@@ -49,20 +49,15 @@ class HashSet():
 
 
     def set(self, value: Any) -> None:
+        ''' Inserts a Node into the appropriate bucket. Also resizes the list of
+            buckets if the next insertion reaches, or exceedes, the MAX_Load.
+        '''
 
-        if self._is_resize_required():
+        # count + 1 considers the current Node being set
+        if self._is_resize_required(self._count + 1, self._capacity):
             self._resize()
 
-        node = Node(value)
-        index = self._hash(str(value))
-        existing_value = self._buckets[index]
-
-        if existing_value is None:
-            self._buckets[index] = node
-        else:
-            self._buckets[self._find_empty_bucket(index)] = node
-
-        self._count += 1
+        self._insert(value)
 
 
     def get(self, value: Any) -> Any:
@@ -74,6 +69,9 @@ class HashSet():
 
 
     def _hash(self, value: str) -> int:
+        ''' Intentionally simple for now. 
+            Include a prime multiplication factor to improve.
+        '''
         buffer = 0
         chars = list(value)
 
@@ -84,8 +82,8 @@ class HashSet():
 
     def _find_empty_bucket(self, index: int) -> int:
         '''
-        Called on a collision to lineraly probe each bucket for the next
-        empty bucket.
+        Called on a collision to lineraly probe for the next empty bucket.
+        The ValueError here should never raise before resize is called.
         '''
         start = index
         next = self._get_next_index(start)
@@ -103,17 +101,35 @@ class HashSet():
         return (index + 1) % self._capacity
 
 
-    def _is_resize_required(self) -> bool:
-        '''
-        Called before setting a new node. This is called before the new node is 
-        set to a bucket, so 1 is added to count to avoid an invalid state after 
-        execution. 
-        If true, this method will call self_resize().
-        '''
-        expected_count = self._count + 1
-        load_factor = expected_count / self._capacity
+    def _insert(self, value: Any):
+        node = Node(value)
+        index = self._hash(str(value))
+        existing_value = self._buckets[index]
+
+        if existing_value is None:
+            self._buckets[index] = node
+        else:
+            self._buckets[self._find_empty_bucket(index)] = node
+
+        self._count += 1
+
+
+    def _is_resize_required(self, count: int, capacity: int) -> bool:
+        load_factor = count / capacity
         return True if load_factor >= HashSet.MAX_LOAD else False
 
 
     def _resize(self) -> None:
-        pass
+        ''' Doubles capacity and rehash.
+        '''
+        # change in place -- hopefully 
+        old_buckets = self._buckets
+        new_capacity = self._capacity * 2
+        self._buckets = [None] * new_capacity
+        self._capacity = new_capacity
+        self._count = 0
+
+        for b in old_buckets:
+            if b is not None:
+                self._insert(b.value)
+

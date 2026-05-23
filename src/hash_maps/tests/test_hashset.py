@@ -31,41 +31,23 @@ def _make_hs(*items):
 
 
 class TestSet:
-    def test_set_increments_count(self, default_hs):
-        before = len(default_hs)
-        default_hs.set('a')
-        after = len(default_hs)
-        assert after == before + 1
+    def test_set_as_component(self, default_hs):
+        hs = default_hs
 
+        # check defaults
+        capacity_default = hs._capacity
+        count_default = hs._count
+        assert capacity_default == 8
+        assert count_default == 0
+        assert len(hs._buckets) == 8
+
+        for i in range(0, 5):
+            hs.set(i)
+        assert hs._count == 5
         
-    def test_set_to_empty_hs(self, default_hs):
-        default_hs.set('test')
-        assert len(default_hs) == 1
-
-
-    def test_set_duplicate_values(self, default_hs):
-        for s in ['test'] * 2:
-            default_hs.set(s)
-        assert len(default_hs) == 2
-
-
-    @pytest.mark.parametrize('values', [
-        ('string'),
-        ('alphanumeric100'),
-        (100),
-        (-100),
-        (1,000),
-        (-1,000),
-        (1),
-        (0),
-        (False),
-        (True),
-        (' '),
-        (None),
-    ])
-    def test_set_datatypes(self, values, default_hs):
-        default_hs.set(values)
-        assert len(default_hs) == 1
+        hs.set('this should cause a resize')
+        assert hs._capacity == capacity_default * 2
+        assert hs._count == 6
 
 
 class TestHash:
@@ -121,7 +103,6 @@ class TestHash:
         assert hs_100._hash(strings) == expected
 
 
-
 class TestFindEmptyBucket:
     @pytest.mark.parametrize('strings, index, expected', [
         ([], 0, 1),                         # expected [1] not [0]
@@ -158,37 +139,51 @@ class TestGetNextIndex:
         assert hs._get_next_index(index) == expected
 
 
-class TestResize:
-    def test_no_load(self, default_hs):
-        signal = default_hs._is_resize_required()           # mimic first set call
-        assert signal == False
+class TestInsert:
+    def test_insert_increments_count(self, default_hs):
+        before = len(default_hs)
+        default_hs._insert('a')
+        after = len(default_hs)
+        assert after == before + 1
+
+        
+    def test_insert_to_empty_hs(self, default_hs):
+        default_hs._insert('test')
+        assert len(default_hs) == 1
 
 
-    def test_last_acceptable_load(self, default_hs):
-        for i in range(0,4):
-            default_hs.set(i)
-        assert default_hs._is_resize_required() == False    # mimic a new set call
-
-    def test_unacceptable_load(self, default_hs):
-        for i in range(0,5):
-            signal = default_hs.set(i)
-        assert default_hs._is_resize_required() == True
+    def test_insert_duplicate_values(self, default_hs):
+        for s in ['test'] * 2:
+            default_hs._insert(s)
+        assert len(default_hs) == 2
 
 
-class TestResizeRaises:
-    ''' I dont like the way _is_resize_required is used from set. The if statement guard
-        is logical and seems fine until the unit tests require testing this seemingly
-        indirect state. 
+    @pytest.mark.parametrize('values', [
+        ('string'),
+        ('alphanumeric100'),
+        (100),
+        (-100),
+        (1,000),
+        (-1,000),
+        (1),
+        (0),
+        (False),
+        (True),
+        (' '),
+        (None),
+    ])
+    def test_insert_datatypes(self, values, default_hs):
+        default_hs._insert(values)
+        assert len(default_hs) == 1
 
-        I dont think that set should be responsible for checking the load factor and/or resizing, but it does happen together. Should a try/except block be used in set wherein _is_resize_requires() raises an error which is subsequently caught to 
-        call resize? is that more testable? 
 
-        Simply passing a count param to _is_resize_required(self, count) sould result in a 
-        cleaner unit test (by not adding 1) but that would break the single use principle of
-        set. Should an orgistration method encapsulate set, _is_resize_required, and _resize
-        into it's own block? Is this parent method the correct place for a try catch block? 
-    '''
-    def test_unwritten_function_to_raise_error(self, default_hs):
-        with pytest.raises(ValueError):
-            # this is unwirtten & 6 is = 75% of 8. 
-            default_hs._is_resize_required_raises(count = 6)
+class TestMeasureLoadFactor:
+    @pytest.mark.parametrize('count, capacity, expected', [
+        (0, 8, False),         # empty
+        (5, 8, False),         # max load acceptable
+        (6, 8, True),          # reaches max load
+    ])
+    def test_load_measurement_signal(self, count, capacity, expected, default_hs):
+        assert default_hs._is_resize_required(count, capacity) == expected
+
+
