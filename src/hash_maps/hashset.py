@@ -85,8 +85,9 @@ class HashSet():
         if result == target:
             return result 
         elif result is None:
-            raise ValueError(f'{target} not found')
+            raise ValueError(f'{target} does not exist')
         else:
+            # a collision occured and the target node must be elsewhere
             return self._scan(index, target)
 
 
