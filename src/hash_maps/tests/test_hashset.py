@@ -26,7 +26,11 @@ def _make_hs(item_list):
     hs = HashSet()
     hs._count = len(item_list)
     for index, value in enumerate(item_list):
-        hs._buckets[index] = value
+        if value == None:
+            continue
+        else:
+            n = Node(value)
+            hs._buckets[index] = n
     return hs
 
 
@@ -135,39 +139,50 @@ class TestFindEmptyBucket:
 
 
 class TestScan:
-    @pytest.mark.parametrize('strings, start, target, expected', [
-        (range(0, 8), 1, 0, 0),          # return first index
-        (range(0, 8), 0, 7, 7),          # return last index
-        (range(0, 8), 1, 2, 2),          # start in middle
-        (range(0, 8), 4, 1, 1),          # wraps
+    @pytest.mark.parametrize('strings, target, expected', [
+        (range(0, 8), 0, 0),          # return first index
+        (range(0, 8), 7, 7),          # return last index
+        (range(0, 8), 2, 2),          # start in middle
+        #TODO: need to do this elsewhere
+        (range(0, 8), 1, 1),          # wraps
     ])
-    def test_scan(self, strings, start, target, expected):
+    def test_scan_expected_behavior(self, strings, target, expected):
         hs = _make_hs(strings)
-        assert hs._scan(start, target) == expected
+        assert hs._scan(target) == expected
 
 
-    def test_scan_not_return_start(self):
-        hs = _make_hs(range(0, 7))
-        with pytest.raises(ValueError):
-            hs._scan(0, 0)
+    ''' The _make_hs function does not has inputs. So, the ordering of the 
+        values here mimics the result of a collision. _scan will still initiate
+        it's search from the target's hashed index.
+    '''
+    @pytest.mark.parametrize('values, target, expected', [
+        ([0, 8], 8, 1),
+        ([0, 8, 1], 1, 2),
+        ([0, 8, 2, 17], 17, 3),
+    ])
+    def test_scan_with_colision(self, values, target, expected):
+        hs = _make_hs(values)
+        assert hs._scan(target) == expected
 
 
-    def test_scan_not_wrap_to_start(self):
-        hs = _make_hs(range(0, 7))
-        with pytest.raises(ValueError):
-            hs._scan(2, 2)
+    def test_scan_with_wrap(self):
+        values = [2, 3, 4, 5, 6, 7, 0, 1]
+        hs = _make_hs(values)
+        assert hs._scan(2) == 0
 
-
-    def test_scan_for_empty_bucket(self):
-        item_list = [0, 1, 2, None, 3, 4, 5]
-        hs = _make_hs(item_list)
-        assert hs._scan(0, None) == 3
-
-
-    def test_full_buckets_raise(self):
+    
+    def test_scan_not_found_code(self):
         hs = _make_hs(range(0, 8))
-        with pytest.raises(ValueError):
-            hs._find_empty_bucket(0)
+        assert hs._scan(8) == -2
+
+
+    #TODO: work on this when I fold the search for empty into scan
+    '''
+    def test_scan_for_empty_bucket(self):
+        item_list = [0, 1, 2, None, 4, 5]
+        hs = _make_hs(item_list)
+        assert hs._scan(None) == 3
+    '''
 
 
 class TestGetNextIndex:

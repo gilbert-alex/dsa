@@ -39,11 +39,13 @@ class HashSet():
     def __str__(self) -> str:
         load_factor = self._count / self._capacity
 
+        '''
         header = (
                 f"capacity  : {self._capacity}\n"
                 f"count     : {self._count}\n"
                 f"load      : {load_factor:.2f}\n"
                 )
+        '''
 
         pairs = {
                 index: node.value
@@ -51,7 +53,8 @@ class HashSet():
                 if node is not None
                 }
 
-        return header + str(pairs)
+        #return header + str(pairs)
+        return str(pairs)
 
 
     def __repr__(self):
@@ -79,16 +82,12 @@ class HashSet():
 
 
     def get(self, target: Any) -> Any:
-        index = self._hash(str(target))
-        result = self._buckets[index]
+        index = self._scan(target)
 
-        if result == target:
-            return result 
-        elif result is None:
-            raise ValueError(f'{target} does not exist')
+        if index == -1 or index == -2:
+            raise ValueError(f'{target} not found')
         else:
-            # a collision occured and the target node must be elsewhere
-            return self._scan(index, target)
+            return self._buckets[index].value
 
 
     def delete(self, value: Any) -> Any:
@@ -116,7 +115,7 @@ class HashSet():
         next = self._get_next_index(start)
 
         while next != start:
-            if self._buckets[next] is None:
+            if self._buckets[next]== None:
                 return next
             next = self._get_next_index(next)
 
@@ -128,21 +127,27 @@ class HashSet():
         ''' Linear search for target value from starting index.
             Omit the target parameter to scan for the next empty bucket.
         '''
-    def _scan(self, start: int, target: Any) -> int:
-        ''' Simpler API than the commented out def above.
-            This is temporary until I can fold _find_empty_bucket into scan.
+    def _scan(self, target: Any) -> int:
+        ''' This is temporary until I can fold _find_empty_bucket into scan.
             
-            Finds previously set values; not empty buckets. For use by get()
-            and delete(). 
+            Linear search by index for target value and returns index.
         '''
-        next = self._get_next_index(start)
+        index = self._hash(str(target))
+        result = self._buckets[index].value
 
-        while next != start:
-            if self._buckets[next] is target:
-                return next
-            next = self._get_next_index(next)
+        if result == target:
+            return index
+        elif result is None:
+            return -1
+        else:
+            next = self._get_next_index(index)
 
-        raise ValueError(f'{target} not found')
+            while next != index:
+                if self._buckets[next].value == target:
+                    return next
+                next = self._get_next_index(next)
+
+        return -2
 
 
     def _get_next_index(self, index: int) -> int:
@@ -190,3 +195,4 @@ if __name__ == "__main__":
     hs.set(6)
     print(hs)
     print(repr(hs))
+    print(f'got value {hs.get(1)}')
