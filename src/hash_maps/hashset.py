@@ -101,7 +101,7 @@ class HashSet():
             raise ValueError(f'{target} not found')
         else:
             self._buckets[index] == None
-            self._count += 1
+            self._count -= 1
 
 
     def _hash(self, value: str) -> int:
@@ -116,7 +116,7 @@ class HashSet():
         return buffer
 
 
-    def _find_empty_bucket(self, index: int) -> int:
+    def _next_empty_bucket(self, index: int) -> int:
         '''
         Called on a collision to lineraly probe for the next empty bucket.
         The ValueError here should never raise before resize is called.
@@ -138,12 +138,17 @@ class HashSet():
             Omit the target parameter to scan for the next empty bucket.
         '''
     def _scan(self, target: Any) -> int:
-        ''' This is temporary until I can fold _find_empty_bucket into scan.
+        ''' This is temporary until I can fold _next_empty_bucket into scan.
             
             Linear search by index for target value and returns index.
         '''
         index = self._hash(str(target))
-        result = self._buckets[index].value
+        #result = self._buckets[index].value
+        bucket = self._buckets[index]
+        if not bucket:
+            return -1
+
+        result = bucket.value
 
         if result == target:
             return index
@@ -180,7 +185,7 @@ class HashSet():
         if existing_value is None:
             self._buckets[index] = node
         else:
-            self._buckets[self._find_empty_bucket(index)] = node
+            self._buckets[self._next_empty_bucket(index)] = node
 
         # Incrementing this variable here because _resize calls this function
         self._count += 1

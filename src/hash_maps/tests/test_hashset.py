@@ -76,6 +76,14 @@ class TestDelete:
         hs._buckets == expected
 
 
+    def test_delete_decrements_length(self, default_hs):
+        hs = default_hs
+        for item in [1, 2, 3]:
+            hs.set(item)
+        hs.delete(1)
+        assert len(hs) == 2
+
+
 class TestHash:
     @pytest.mark.parametrize('strings, expected', [
         ('0', 0),
@@ -138,15 +146,15 @@ class TestFindEmptyBucket:
         ([0, None, 2, 3, 4, 5, None, 7], 2, 6),         # search right
         ([None, 1, 2, 3, 4, 5, 6, 7], 1, 0),      # wraps
     ])
-    def test_find_empty_bucket(self, strings, index, expected):
+    def test_next_empty_bucket(self, strings, index, expected):
         hs = _make_hs(strings)
-        assert hs._find_empty_bucket(index) == expected
+        assert hs._next_empty_bucket(index) == expected
 
     
     def test_full_buckets_raise(self):
         hs = _make_hs(range(0, 8))
         with pytest.raises(ValueError):
-            hs._find_empty_bucket(0)
+            hs._next_empty_bucket(0)
 
 
 class TestScan:
@@ -154,15 +162,13 @@ class TestScan:
         (range(0, 8), 0, 0),          # return first index
         (range(0, 8), 7, 7),          # return last index
         (range(0, 8), 2, 2),          # start in middle
-        #TODO: need to do this elsewhere
-        (range(0, 8), 1, 1),          # wraps
     ])
     def test_scan_expected_behavior(self, strings, target, expected):
         hs = _make_hs(strings)
         assert hs._scan(target) == expected
 
 
-    ''' The _make_hs function does not has inputs. So, the ordering of the 
+    ''' The _make_hs function does not hash inputs. So, the ordering of the 
         values here mimics the result of a collision. _scan will still initiate
         it's search from the target's hashed index.
     '''
@@ -185,15 +191,6 @@ class TestScan:
     def test_scan_not_found_code(self):
         hs = _make_hs(range(0, 8))
         assert hs._scan(8) == -2
-
-
-    #TODO: work on this when I fold the search for empty into scan
-    '''
-    def test_scan_for_empty_bucket(self):
-        item_list = [0, 1, 2, None, 4, 5]
-        hs = _make_hs(item_list)
-        assert hs._scan(None) == 3
-    '''
 
 
 class TestGetNextIndex:
@@ -260,3 +257,25 @@ class TestMeasureLoadFactor:
         assert default_hs._is_resize_required(count, capacity) == expected
 
 
+class TestComponent:
+    def test_component(self):
+        cruise_stops = HashSet()
+        assert cruise_stops._capacity == 8
+        assert len(cruise_stops) == 0
+        cruise_stops.set('Vancouver')
+        cruise_stops.set('Ketchikan')
+        cruise_stops.set('Icy Strait Point')
+        cruise_stops.set('Sitka')
+        cruise_stops.set('Skagway')
+        assert cruise_stops._capacity == 8
+        assert len(cruise_stops) == 5
+        cruise_stops.set('Hubbard Glacier')
+        assert cruise_stops._capacity == 16
+        assert len(cruise_stops) == 6
+        cruise_stops.set('Seward')
+        assert cruise_stops.get('Skagway') == 'Skagway'
+        with pytest.raises(ValueError):
+            cruise_stops.get('Homer')
+        cruise_stops.delete('Vancouver')
+        print(cruise_stops)
+        len(cruise_stops) == 6
