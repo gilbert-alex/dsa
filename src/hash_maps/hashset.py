@@ -10,7 +10,7 @@ class HashSet():
     ''' 
     A hash set implemented with linear probing to handle collisions.
 
-    Interanlly maintains a Python list of Nodes.
+    Interanally maintains a Python list of Nodes.
     Automatically resizes when the load factor exceeds CAPACITY.
 
     Attributes:
@@ -72,9 +72,13 @@ class HashSet():
     def set(self, value: Any) -> None:
         ''' Inserts a Node into the appropriate bucket. Also resizes the list of
             buckets if the next insertion reaches, or exceedes, the MAX_Load.
-        '''
 
-        # count + 1 considers the current Node being set
+            The count instance variable is not owned here because multiple
+            functions call self._insert() which is a more natural owner.
+        
+            self._count + 1 is passed to self._is_resize_required() to consider
+            the current Node being set.
+        '''
         if self._is_resize_required(self._count + 1, self._capacity):
             self._resize()
 
@@ -90,13 +94,19 @@ class HashSet():
             return self._buckets[index].value
 
 
-    def delete(self, value: Any) -> Any:
-        pass
+    def delete(self, target: Any) -> Any:
+        index = self._scan(target)
+
+        if index == -1 or index == -2:
+            raise ValueError(f'{target} not found')
+        else:
+            self._buckets[index] == None
+            self._count += 1
 
 
     def _hash(self, value: str) -> int:
         ''' Intentionally simple for now. 
-            Include a prime multiplication factor to improve.
+            Include a prime multiplication factor to improve distribution.
         '''
         buffer = 0
         chars = list(value)
@@ -151,11 +161,18 @@ class HashSet():
 
 
     def _get_next_index(self, index: int) -> int:
-        ''' Increment index with wrap '''
+        ''' Increment index with wrap from last to first index.
+        '''
         return (index + 1) % self._capacity
 
 
     def _insert(self, value: Any) -> None:
+        ''' Assigns a new Node to the hashed bucket unless there is a collision.
+            In the event of a collision, the next empty bucket will be selected.
+            Incrementing the count instance variable is owned here because the
+            resize helper calls this instead of set. I admit this is a break
+            from the single purpose principle.
+        '''
         node = Node(value)
         index = self._hash(str(value))
         existing_value = self._buckets[index]
@@ -165,6 +182,7 @@ class HashSet():
         else:
             self._buckets[self._find_empty_bucket(index)] = node
 
+        # Incrementing this variable here because _resize calls this function
         self._count += 1
 
 

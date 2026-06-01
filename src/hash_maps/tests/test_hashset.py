@@ -65,6 +65,17 @@ class TestGet:
         assert hs.get(target) == expected
 
 
+class TestDelete:
+    @pytest.mark.parametrize('strings, target, expected', [
+        (range(0, 8), 0, [None, 1, 2, 3, 4, 5, 6, 7]),
+        ([None, 1, 2, 3], 1, [None, None, 2, 3]),
+    ])
+    def test_delete_removes_node(self, strings, target, expected):
+        hs = _make_hs(strings)
+        hs.delete(target)
+        hs._buckets == expected
+
+
 class TestHash:
     @pytest.mark.parametrize('strings, expected', [
         ('0', 0),
