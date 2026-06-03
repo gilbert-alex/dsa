@@ -6,3 +6,5 @@ __pycache__/
 # Package build artifacts
 src/*.egg-info/
 
+# Example files
+*_example.py
