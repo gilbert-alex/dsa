@@ -31,8 +31,8 @@ class HashSet():
     
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
-        self._capacity = capacity
-        self._count = 0
+        self._capacity: int = capacity
+        self._count: int = 0
         self._buckets: list[Node | None] = [None] * self._capacity
 
 
@@ -192,7 +192,7 @@ class HashSet():
 
 
     def _is_resize_required(self, count: int, capacity: int) -> bool:
-        load_factor = count / capacity
+        load_factor: float = count / capacity
         return True if load_factor >= HashSet.MAX_LOAD else False
 
 
