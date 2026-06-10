@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class HashMap:
 
     DEFAULT_CAPACITY = 8
@@ -5,12 +8,12 @@ class HashMap:
 
 
     def __init__(self, 
-                 capacity = DEFAULT_CAPACITY, 
-                 load_threshold = LOAD_THRESHOLD):
-        self._capacity = capacity
-        self._load_threshold = load_threshold
-        self._size = 0
-        self._buckets = [[] for _ in range(self._capacity)]
+                 capacity: int = DEFAULT_CAPACITY, 
+                 load_threshold: float = LOAD_THRESHOLD) -> None:
+        self._capacity: int = capacity
+        self._load_threshold: float = load_threshold
+        self._size: int = 0
+        self._buckets: list[Any | None] = [[] for _ in range(self._capacity)]
 
 
     def _hash(self, value: str) -> int:
@@ -25,20 +28,34 @@ class HashMap:
         return buffer
 
 
-    def put(self, key, value):
+    def _resize(self) -> None:
+        old_buckets = self._buckets
+        self._size = 0
+        self._capacity *= 2
+        self._buckets = [[] for _ in range(self._capacity)]
+
+        for bucket in old_buckets:
+            for k, v in bucket:
+                self.put(k, v)
+
+
+    def put(self, key: str, value: Any) -> None:
         index = self._hash(key)
         bucket = self._buckets[index]
 
         for i, (k, v) in enumerate(bucket):
             if k == key:
-                bucket[i] = (k, v)
+                bucket[i] = (k, value)
                 return
 
         bucket.append((key, value))
         self._size += 1
+        
+        if self._load_threshold <= self._size / self._capacity:
+            self._resize()
 
 
-    def get(self, key, default = None):
+    def get(self, key: str, default: Any | None = None):
         index = self._hash(key)
         bucket = self._buckets[index]
 
@@ -49,13 +66,20 @@ class HashMap:
         return default
 
 
-    def remove(self, key):
-        pass
+    def remove(self, key: str) -> tuple | bool:
+        index = self._hash(key)
+        bucket = self._buckets[index]
+
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                return bucket.pop(i)
+
+        return False
 
 
-    def contains(self, key):
+    def contains(self, key: str) -> bool:
         pass
     
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._size
