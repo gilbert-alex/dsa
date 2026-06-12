@@ -59,4 +59,35 @@ dsa/
 ## CI/CD Directory Structure
 
 <!-- TREE_START -->
+```
+./
+├── src/
+│   ├── graphs/
+│   ├── hash_maps/
+│   │   ├── tests/
+│   │   │   ├── test_hashmap.py
+│   │   │   └── test_hashset.py
+│   │   ├── hashmap.py
+│   │   └── hashset.py
+│   ├── heaps/
+│   ├── linked_lists/
+│   │   ├── tests/
+│   │   │   ├── test_doubly_linked_list.py
+│   │   │   └── test_singly_linked_list.py
+│   │   ├── README.md
+│   │   ├── doubly_linked_list.py
+│   │   └── singly_linked_list.py
+│   ├── sorting/
+│   ├── stacks_and_queues/
+│   │   ├── tests/
+│   │   │   ├── test_linked_list_queue.py
+│   │   │   ├── test_linked_list_stack.py
+│   │   │   ├── test_list_queue.py
+│   │   │   └── test_list_stack.py
+│   │   ├── queue.py
+│   │   └── stack.py
+│   └── trees/
+├── README.md
+└── tree_output.txt
+```
 <!-- TREE_END -->
