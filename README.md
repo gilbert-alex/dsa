@@ -23,6 +23,7 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 
 ## Simplified Directory Tree
 
+```
 dsa/
 ├── pyproject.toml
 ├── README.md
@@ -53,3 +54,4 @@ dsa/
     │       ├── test_list_queue.py
     │       └── test_list_stack.py
     └── trees/
+```
