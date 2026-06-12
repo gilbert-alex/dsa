@@ -87,7 +87,6 @@ dsa/
 │   │   ├── queue.py
 │   │   └── stack.py
 │   └── trees/
-├── README.md
-└── tree_output.txt
+└── README.md
 ```
 <!-- TREE_END -->
