@@ -23,41 +23,6 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 
 ## Simplified Directory Tree
 
-```
-dsa/
-├── pyproject.toml
-├── README.md
-├── requirements.txt
-└── src/
-    ├── graphs/
-    ├── hash_maps/
-    │   ├── hashmap.py
-    │   ├── hashset.py
-    │   └── tests/
-    │       ├── test_hashmap.py
-    │       └── test_hashset.py
-├── heaps/
-    ├── linked_lists/
-    │   ├── doubly_linked_list.py
-    │   ├── README.md
-    │   ├── singly_linked_list.py
-    │   └── tests/
-    │       ├── test_doubly_linked_list.py
-    │       └── test_singly_linked_list.py
-    ├── sorting/
-    ├── stacks_and_queues/
-    │   ├── queue.py
-    │   ├── stack.py
-    │   └── tests/
-    │       ├── test_linked_list_queue.py
-    │       ├── test_linked_list_stack.py
-    │       ├── test_list_queue.py
-    │       └── test_list_stack.py
-    └── trees/
-```
-
-## CI/CD Directory Structure
-
 <!-- TREE_START -->
 ```
 ./
