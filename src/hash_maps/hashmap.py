@@ -72,13 +72,14 @@ class HashMap:
 
         for i, (k, v) in enumerate(bucket):
             if k == key:
+                self._size -= 1
                 return bucket.pop(i)
 
         return False
 
 
     def contains(self, key: str) -> bool:
-        pass
+        return False if not self.get(key) else True
     
 
     def __len__(self) -> int:

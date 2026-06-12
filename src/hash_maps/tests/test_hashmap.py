@@ -38,6 +38,13 @@ def oversize_hm():
     return hm
 
 
+@pytest.fixture
+def collision_hm():
+    item_list = [[('0', 1), ('h', 2)]]      # mimic a collision
+    hm = _make_hm(item_list)
+    return hm
+
+
 class TestSetup:
     def test_hm_maker(self):
         l = [[('a', 1)], [('b', 2)], [('c', 3)]]
@@ -193,6 +200,12 @@ class TestGet:
         assert hm.get('a', 'not here') == 'not here'
 
 
+    def test_get_from_collision(self, collision_hm):
+        hm = collision_hm
+        assert hm.get('0') == 1 
+        assert hm.get('h') == 2
+
+
 class TestRemove:
     def test_remove_returns_tuple(self, full_hm):
         hm = full_hm
@@ -202,3 +215,43 @@ class TestRemove:
     def test_remove_not_found_returns_false(self, full_hm):
         hm = full_hm
         assert hm.remove('z') == False
+
+
+class TestContains:
+    def test_found_key_returns_true(self, full_hm):
+        hm = full_hm
+        assert hm.contains('a') == True
+
+
+    def test_not_found_key_returns_false(self, full_hm):
+        hm = full_hm
+        assert hm.contains('z') == False
+
+
+    def test_finds_key_in_collision(self, collision_hm):
+        hm = collision_hm
+        assert hm.contains('0') == True
+        assert hm.contains('h') == True
+
+
+class TestComponent:
+    def test_hash_map(self):
+        teams = HashMap()
+        assert teams._capacity == 8
+        assert len(teams) == 0
+        teams.put('Mexico', 'Group A')
+        teams.put('South Africa', 'Group A')
+        teams.put('South Korea', 'Group A')
+        teams.put('Czechia', 'Group A')
+        assert len(teams) == 4
+        teams.put('Antartica', 'surprise')
+        assert teams.contains('United States') == False
+        removed = teams.remove('Antartica')
+        assert removed == ('Antartica', 'surprise')
+        assert len(teams) == 4
+        teams.put('Canada', 'Group B')
+        teams.put('Hosnia-Herzegovina', 'Group B')
+        teams.put('Qatar', 'Group B')
+        teams.put('Switzerland', 'Group B')
+        assert teams._capacity == 16
+        assert len(teams) == 8
