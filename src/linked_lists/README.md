@@ -1,25 +1,28 @@
 # Linked Lists
 
-## Implementations
-
 | File | Structure |
 |---|---|
 | `singly_linked_list.py` | `SinglyLinkedList` - head + tail pointers, forward traversal only |
-| `doubly_linked_list.py` | `DoublyLinkedList` - head + tail pointers, bydirectional traversal |
+| `doubly_linked_list.py` | `DoublyLinkedList` - head + tail pointers, bi-directional traversal |
 
 ---
 
-## Concept
+## Description
 
 A linked list is a linear data structure where elements (**nodes**) are connected
 via pointers rather than stored contiguously in memory. Each node holds a value
 and a reference to the next node. In a doubly linked list each node also holds a 
 reference to the previous node.
 
-This is in contrast to a Python 'list', which is a dynamic array - elements live
-in contiguous memory and are accessible by index in O(1). Linked list nodes can
-live anywhere in memory; the only way to reach a node is to follow pointers from
-the head.
+To contrast a Python List which supports random indexing (i.e. my_list[0]), the
+only way to reach a Linked List's Node is to traverse pointers from the head or
+tail until the target node is found.
+
+This lack of random indexing makes this structure relatively slow regarding search
+methods but provides efficient insertion/deletion from the 'ends' of the list where
+Lists/Arrays may have to reindex each element. It stands to reason that this
+structure does not need much memory overhead to simply store pointers compared to
+Lists/Arrays (but I dont know for sure and will find out more in this DSA project).
 
 ---
 
@@ -57,7 +60,7 @@ the head.
 
 ---
 
-## Key Design Decisions
+## Implementation Notes
 
 **Head and tail pointers are maintained on both structures.** This makes both 
 `prepend` and `append` possible in O(1) time. The `append_slow` method on 
@@ -81,7 +84,7 @@ method to setup a teGst for a different public method.
 
 ---
 
-## Pointer Invariants
+## Invariants
 
 Every mutating operation must leave the structure in a consistent state. These
 invariants hold after every method call:
