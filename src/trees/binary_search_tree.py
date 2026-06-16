@@ -14,7 +14,7 @@ class BSTNode:
     
     def __repr__(self):
         lv = None if self.left == None else self.left.value
-        rv = None if self.left == None else self.right.value
+        rv = None if self.right == None else self.right.value
 
         return(f'BST Node(value:{str(self.value)}, left:{lv}, right:{rv})')
 

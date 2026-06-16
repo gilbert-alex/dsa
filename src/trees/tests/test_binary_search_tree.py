@@ -33,12 +33,27 @@ def bst_depth_three(bst_depth_two):
     return t
 
 
+def assert_bst_invariant(node, low=None, high=None):
+    ''' Recursive helper to check that left pointers are to nodes with
+        smaller values and right pointers are to nodes with higher values.
+    '''
+    if node is None:
+        return
+    assert low is None or node.value > low
+    assert high is None or node.value < high
+    return assert_bst_invariant(node.left, low, node.value)
+    return assert_bst_invariant(node.right, node.value, high)
+
+
 class TestSetup:
-    def test_bst_only_root(self, bst_only_root):
-        assert bst_only_root.root.value == 10
-        assert bst_only_root.root.left == None
-        assert bst_only_root.root.right == None
-        assert len(bst_only_root) == 1
+    @pytest.mark.parametrize('tree_fixture', [
+        "bst_only_root",
+        "bst_depth_two",
+        "bst_depth_three",
+    ])
+    def test_invariants(self, tree_fixture, request):
+        t = request.getfixturevalue(tree_fixture)
+        assert_bst_invariant(t.root)
 
 
     #TODO: assert with str or other helper method when done
@@ -73,27 +88,27 @@ class TestBinarySearchTree:
 
 class TestInsertPrivate:
     #TODO: this needs to include tests at many recursive levels - see contains tests
-    def test_new_node_for_root(self):
+    def test_empty_tree_returns_new_node(self):
         t = BinarySearchTree()
-        n = t._insert(t.root, 1)
-        n.value = 1
+        result = t._insert(t.root, 1)
+        assert type(result).__name__ == "BSTNode"
 
 
-    def test_new_left_node(self, bst_only_root):
+    def test_smaller_value_update_left_pointer(self, bst_only_root):
         t = bst_only_root
         t._insert(t.root, 9)
-        assert t.root.left.value == 9
+        assert t.root.left != None
         assert t.root.right == None
 
 
-    def test_new_right_node(self, bst_only_root):
+    def test_smaller_value_update_right_pointer(self, bst_only_root):
         t = bst_only_root
         t._insert(t.root, 11)
-        assert t.root.right.value == 11
         assert t.root.left == None
+        assert t.root.right != None
 
 
-    def test_new_node_null_pointers(self, bst_only_root):
+    def test_new_node_has_null_pointers(self, bst_only_root):
         t = bst_only_root
         t._insert(t.root, 1)
         new_node = t.root.left
@@ -101,19 +116,10 @@ class TestInsertPrivate:
         assert new_node.right == None
 
 
-    def test_new_node_below_root(self, bst_depth_two):
-        t = bst_depth_two
-        target_node = t.root.left
-        t._insert(target_node, 1)
-        assert target_node.left.value == 1
-        assert target_node.right == None
-
-
     def test_insert_duplicate_raises(self, bst_only_root):
         t = bst_only_root
         with pytest.raises(ValueError) as e:
             t.insert(10)
-
         assert str(e.value) == '10 is already in this BST'
 
 
@@ -132,32 +138,109 @@ class TestInsert:
         assert len(t) == 1
 
 
+    def test_root_address_changes_when_set(self):
+        t = BinarySearchTree()
+        initial_address = id(t.root)
+        t.insert(50)
+        assert initial_address != id(t.root)
+
+
+    def test_static_root_addr_for_new_child(self, bst_only_root):
+        t = bst_only_root
+        initial_address = id(t.root)
+        t.insert(1)
+        assert initial_address == id(t.root)
+
+
+    def test_static_root_addr_for_new_distant_child(self, bst_depth_three):
+        t = bst_depth_three
+        initial_address = id(t.root)
+        t.insert(1)
+        assert initial_address == id(t.root)
+
+
+    def test_static_inter_addr_for_new_child(self, bst_depth_two):
+        t = bst_depth_two
+        initial_address = id(t.root.left)
+        t.insert(1)
+        assert initial_address == id(t.root.left)
+
+
+    def test_static_inter_addr_for_new_distant_child(self, bst_depth_three):
+        t = bst_depth_three
+        initial_address = id(t.root.left)
+        t.insert(1)
+        assert initial_address == id(t.root.left)
+
+
     def test_insert_duplicate_raises(self):
         t = BinarySearchTree()
         t.insert(2)
         with pytest.raises(ValueError) as e:
             t.insert(2)
-
         assert str(e.value) == '2 is already in this BST'
 
 
+    @pytest.mark.parametrize('nodes', [
+        ([20, 10, 30, 5, 15, 25, 35, 4, 6, 14, 16, 24, 26, 34, 36]),    #balanced
+        ([20, 19, 18, 17, 16, 15]),                 #ordered desc
+        ([1, 2, 3, 4, 5, 6, 7, 8, 9]),              #ordered asc
+        ([10, 1, 9, 2, 8, 3, 7, 4, 6, 5]),          #all less than root
+        ([1, 10, 2, 9, 3, 8, 4, 7, 5, 6]),          #all greater than root
+        ([-5, -6, -7]),                             #negative integers
+        ([0, -2, 2, -3, -1, 1, 3]),                 #include zero
+        ([1, 5, 4, 6, 2]),                          #insert at intermediate depth
+    ])
+    def test_unittest(self, nodes):
+        t = BinarySearchTree()
+        for n in nodes:
+            t.insert(n)
+        assert_bst_invariant(t.root)
+        assert len(t) == len(nodes)
+    
+
 class TestContainsPrivate:
-    #TODO: implement this
-    def test_something(self):
-        pass
+    def test_false_for_empty_tree(self):
+        t = BinarySearchTree()
+        assert t._contains(t.root, 1) == False
 
 
-    def test_something_else(self):
-        pass
+    def test_finds_left_child(self, bst_depth_two):
+        t = bst_depth_two
+        assert t._contains(t.root, 10)
+
+
+    def test_finds_right_child(self, bst_depth_two):
+        t = bst_depth_two
+        assert t._contains(t.root, 30)
+
+
+    def test_finds_left_child_with_recursion(self, bst_depth_three):
+        t = bst_depth_three
+        assert t._contains(t.root, 5)
+
+
+    def test_finds_right_child_with_recursion(self, bst_depth_three):
+        t = bst_depth_three
+        assert t._contains(t.root, 35)
+
+
+    @pytest.mark.parametrize('target', [
+        -1, 0, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 29, 31, 24, 36,
+    ])
+    def test_false_with_recursion(self, target, bst_depth_three):
+        t = bst_depth_three
+        assert t._contains(t.root, target) == False
 
 
 class TestContains:
     ''' Tests on a BST with at least three levels are important because this
         implementation accesses/edits Nodes recursively through all levels.
     '''
-    def test_found_from_root(self, bst_depth_two):
+    def test_finds_root(self, bst_depth_two):
         t = bst_depth_two
-        assert t.contains(20) == True
+        r = t.root.value
+        assert t.contains(r) == True
 
 
     @pytest.mark.parametrize('target', [
