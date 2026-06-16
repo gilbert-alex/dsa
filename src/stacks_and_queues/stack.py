@@ -9,11 +9,13 @@ class ListStack:
     '''
     A LIFO stack implemented on a Python list. This structure operates on 
     the n-th index of the list where n is the length - 1. 
+    
     The __str__ method reverses the native ordering of the Python list to 
     show a more intuitive string representation of a stack.
-    Assuming the Python list itself operates at O(1) time, this representation 
-    of a stack also operates at O(1) time complexity for both insertion 
-    and deletion operations.
+    
+    Python's list.append and list.pop both operates at O(1) time, this stack
+    inherits the same and runs in O(1) time for both insertion and
+    deletion operations.
     '''
 
     def __init__(self) -> None:
@@ -26,7 +28,7 @@ class ListStack:
         Python list, this string similarly displays the top of the stack 
         on the right side.
         '''
-        #"!r" is the equavalent of "repr(d) for d in self._data"
+        #"!r" is the equivalent of "repr(d) for d in self._data"
         return f"Stack({self._data!r})"
 
 
@@ -68,6 +70,7 @@ class LinkedListStack:
     '''
     A LIFO stack implemented on a singly linked list. This structure operates on 
     the 0-th index of the list.
+
     This representation of a stack operates at O(1) time complexity for both 
     insertion and deletion operations.
     '''
@@ -99,10 +102,9 @@ class LinkedListStack:
 
     def pop(self):
         '''
-        It's probably cleaner to create a "delete_head" method on the linked list
-        instead of relying on this peek and pop combo.
-        I dont have to worry about popping an item not in the list because
-        this method does not depend on user input.
+        Implementing a LinkedListStack.delete_head() would be best.
+        This method relies on SinglyLinkedList.delete() which is intended to 
+        delete the first occurance of an index, not simply the head.
         '''
         if self.is_empty():
             raise IndexError('Stack is empty')

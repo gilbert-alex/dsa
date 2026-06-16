@@ -9,13 +9,14 @@ class ListQueue:
     '''
     A FIFO queue implement on a Python list. This structure enqueues on 
     the right and dequeues on the left. 
-    The __str__ method reverses the native ordering of the Python list to
-    show a more intuitive string representation of a queue.
-    Assuming the Python list itself operates at O(1) time, this representation
-    of a queue also operates at O(1) time complexity for insertion. Deletion
-    requires O(n) time complexity to shift the index of each list element. The
-    only optimization when using a List as data store is to choose when to 
-    reindex elements; on insertion or deletion. 
+
+    Python's list.append operates at O(1) time, this queue inherits the same
+    and runs in O(1) time for insertion operations. Deletion requires O(n)
+    time to shift left each list element. 
+
+    This implementation chooses O(1) enqueue and O(n) dequeue. 
+    The alternative — inserting at index 0 — would invert these costs.
+
     '''
 
 
@@ -48,7 +49,7 @@ class ListQueue:
             raise IndexError("queue is empty")
 
         dequeued = self._data[0]
-        self._data = self._data[1::]
+        self._data = self._data[1:]
         return dequeued 
 
 
@@ -67,12 +68,9 @@ class LinkedListQueue:
     '''
     A FIFO queue implemented on a singly linked list. This structure enqueues on 
     the right and dequeues on the left. 
-    This design is necessunderlying Linked List is only capable of deleting the 
-    first from left, or all, occurances of a target item's value. 
     
-    Note - if I change to the Doubly Linked List backing:
-    The underlying Linked List maintains a previous node reference pointer; therefore, 
-    this representation of a queue operates at O(1) time complexity for both insertion 
+    The underlying Singly Linked List maintains both head and tail pointers; therefore, 
+    this representation of a Queue operates at O(1) time complexity for both insertion 
     and deletion operations.
     '''
     def __init__(self) -> None:
@@ -98,6 +96,11 @@ class LinkedListQueue:
 
 
     def dequeue(self) -> Any:
+        '''
+        Implementing a LinkedListStack.delete_head() would be best.
+        This method relies on SinglyLinkedList.delete() which is intended to 
+        delete the first occurance of an index, not simply the head.
+        '''
         if self.is_empty():
             raise IndexError('Queue is empty')
 
