@@ -31,7 +31,7 @@ class BinarySearchTree:
         return self.size
 
 
-    def _insert(self, node: Optional[BSTNode], value: int):
+    def _insert(self, node: Optional[BSTNode], value: int) -> BSTNode | None:
         ''' Recursevely redraws the path from root to new Node to maintain pointers to all
             updated child Nodes.
         '''
@@ -60,13 +60,25 @@ class BinarySearchTree:
     def _remove(self, node: Optional[BSTNode], value: int):
         pass 
 
-    
+
     def remove(self, value: int) -> int | None:
         pass
 
 
+    def _contains(self, node: Optional[BSTNode], value: int) -> bool:
+        if node is None:
+            return False
+        if value < node.value:
+            return self._contains(node.left, value)
+        if value > node.value:
+            return self._contains(node.right, value)
+        if value == node.value:
+            return True
+
+
     def contains(self, value: int) -> bool:
-        pass
+        return self._contains(self.root, value)
+
 
 if __name__ == "__main__":
     n = BSTNode(42)

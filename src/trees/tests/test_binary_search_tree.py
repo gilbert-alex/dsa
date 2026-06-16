@@ -20,12 +20,35 @@ def bst_depth_two():
     return t
 
 
+@pytest.fixture
+def bst_depth_three(bst_depth_two):
+    t = bst_depth_two
+    left_child = t.root.left
+    left_child.left = BSTNode(5)
+    left_child.right = BSTNode(15)
+    right_child = t.root.right
+    right_child.left = BSTNode(25)
+    right_child.right = BSTNode(35)
+    t.size += 4
+    return t
+
+
 class TestSetup:
     def test_bst_only_root(self, bst_only_root):
         assert bst_only_root.root.value == 10
         assert bst_only_root.root.left == None
         assert bst_only_root.root.right == None
         assert len(bst_only_root) == 1
+
+
+    #TODO: assert with str or other helper method when done
+    def test_bst_depth_two(self, bst_depth_two):
+        pass
+
+
+    #TODO: assert with str or other helper method when done
+    def test_bst_depth_three(self, bst_depth_three):
+        pass
 
 
 class TestBSTNode:
@@ -49,6 +72,7 @@ class TestBinarySearchTree:
 
 
 class TestInsertPrivate:
+    #TODO: this needs to include tests at many recursive levels - see contains tests
     def test_new_node_for_root(self):
         t = BinarySearchTree()
         n = t._insert(t.root, 1)
@@ -115,3 +139,65 @@ class TestInsert:
             t.insert(2)
 
         assert str(e.value) == '2 is already in this BST'
+
+
+class TestContainsPrivate:
+    #TODO: implement this
+    def test_something(self):
+        pass
+
+
+    def test_something_else(self):
+        pass
+
+
+class TestContains:
+    ''' Tests on a BST with at least three levels are important because this
+        implementation accesses/edits Nodes recursively through all levels.
+    '''
+    def test_found_from_root(self, bst_depth_two):
+        t = bst_depth_two
+        assert t.contains(20) == True
+
+
+    @pytest.mark.parametrize('target', [
+        (10),
+        (30),
+    ])
+    def test_value_found_from_one_recursive_steps(self, target, bst_depth_two):
+        t = bst_depth_two
+        assert t.contains(target) == True
+
+
+    @pytest.mark.parametrize('target', [
+        (5),        # left left node
+        (15),       # left right node
+        (25),       # right left node
+        (35),       # right right node
+    ])
+    def test_value_found_from_many_recursive_steps(self, target, bst_depth_three):
+        t = bst_depth_three
+        assert t.contains(target) == True
+
+
+    @pytest.mark.parametrize('target', [
+        (0),        # left node
+        (100),      # right node
+    ])
+    def test_value_not_found_from_one_recursive_steps(self, target, bst_depth_two):
+        t = bst_depth_two
+        assert t.contains(target) == False
+
+
+    @pytest.mark.parametrize('target', [
+        (0),        # left node
+        (100),      # right node
+    ])
+    def test_value_not_found_from_many_recursive_steps(self, target, bst_depth_three):
+        t = bst_depth_three
+        assert t.contains(target) == False
+
+
+    def test_empty_tree_returns_false(self):
+        t = BinarySearchTree()
+        assert t.contains(1) == False
