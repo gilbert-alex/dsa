@@ -62,25 +62,26 @@ Lists/Arrays (but I dont know for sure and will find out more in this DSA projec
 
 ## Implementation Notes
 
-**Head and tail pointers are maintained on both structures.** This makes both 
-`prepend` and `append` possible in O(1) time. The `append_slow` method on 
-`SinglyLinkedList` is maintained to illustrate the benefit of a tail pointer.
+**Head and tail pointers are maintained on both structures.**<br>
+This makes both `prepend` and `append` possible in O(1) time. The `append_slow` 
+method on `SinglyLinkedList` is maintained to illustrate the benefit of a 
+tail pointer.
 
-**`delete` on `SinglyLinkedList` deletes the first occurrence.** Traversal of
-a singly linked list is always required to discover the previous node in order
-to link around the target node.
+**`delete` on `SinglyLinkedList` deletes the first occurrence.**<br> 
+Traversal of a singly linked list is always required to discover the previous 
+node in order to link around the target node.
 
-**`delete_first` on `DoublyLinkedList` accepts a `from_end` flag.** Because
-the DLL has a `previous` pointer, you can traverse from either end. Creating
-a separate `delete_last` method would be cleaner but this is an intentional
-experiment with a different technique.
+**`delete_first` on `DoublyLinkedList` accepts a `from_end` flag.**<br>
+Because the DLL has a `previous` pointer, you can traverse from either end. 
+Creating a separate `delete_last` method would be cleaner but this is an 
+intentional experiment with a different technique.
 
 **Both delete methods raise `ValueError` when the target is not found.**
 
-**`_make_sll` and `_make_dll` are test helper functions.** They allow tests
-to bypass the public interface while building lists to decouple setup from
-the methods under test. In other words, you shouldn't use a separate public
-method to setup a teGst for a different public method. 
+**`_make_sll` and `_make_dll` are test helper functions.**<br>
+They allow tests to bypass the public interface while building lists to decouple 
+setup from the methods under test. In other words, you shouldn't use a separate 
+public method to setup a teGst for a different public method. 
 
 ---
 

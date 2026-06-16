@@ -54,11 +54,11 @@ effect on insertion/deletion time complexity.
 
 ## Implementation Notes
 
-**Each module contains two classes**  
+**Each module contains two classes**<br>
 List and Linked List backed classes are included in each module. Both structures
 have the same API.
 
-**String representation and mental model**  
+**String representation and mental model**<br>
 When printed to the terminal, I visualized Stacks/Queues as [Front <- ... <- Back].
 Probably because it was natural to do so when reading left to right. However,
 Python built-in List methods operate on the n-th side of a List. The str
@@ -75,9 +75,7 @@ New items are appended to the right of the list at O(1). Removal from the left
 requires O(n) as each remaining element must be reindexed. Alternatively, 
 inserting at index 0 would invert these costs.
 
-**Queue optimization with Linked-list backed structure*
-
-
+**Queue optimization with Linked-list backed structure**<br>
 Reimplementing the Queue with a linked list improves deletion complexity to
 O(1) because we can access the head directly and efficiently update pointers
 to the next item. Reindexing all items is not necessary as in the List-backed
