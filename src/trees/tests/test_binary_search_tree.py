@@ -44,6 +44,15 @@ def assert_bst_invariant(node, low=None, high=None):
     assert_bst_invariant(node.left, low, node.value)
     assert_bst_invariant(node.right, node.value, high)
 
+def collect_pointers(node):
+    if node is None:
+        return []
+    return (
+        [(id(node), node.value, id(node.left), id(node.right))]
+        + collect_pointers(node.left)
+        + collect_pointers(node.right)
+    )
+
 
 class TestSetup:
     @pytest.mark.parametrize('tree_fixture', [
@@ -56,12 +65,12 @@ class TestSetup:
         assert_bst_invariant(t.root)
 
 
-    #TODO: assert with str or other helper method when done
+    #TODO: assert when traversals are built
     def test_bst_depth_two(self, bst_depth_two):
         pass
 
 
-    #TODO: assert with str or other helper method when done
+    #TODO: assert when traversals are built
     def test_bst_depth_three(self, bst_depth_three):
         pass
 
@@ -97,7 +106,7 @@ class TestMinimumNode:
         n = t.root.left
         assert t._min_node(n).value == 5
 
-        
+
     def test_start_search_from_leaf_node(self, bst_depth_three):
         t = bst_depth_three
         n = t.root.left.left
@@ -118,7 +127,7 @@ class TestMinimumNode:
         t.root.left.right.right = BSTNode(5)
         assert t._min_node(t.root).value == 1
 
-        
+
 class TestInsertPrivate:
     def test_empty_tree_returns_new_node(self):
         t = BinarySearchTree()
@@ -178,10 +187,16 @@ class TestInsert:
 
 
     def test_static_root_addr_for_new_child(self, bst_only_root):
+        '''This works but it's a lotta lines for the next few tests
+        '''
         t = bst_only_root
-        initial_address = id(t.root)
+        target = 10
+        before = collect_pointers(t.root)
+        before_node = next((n[:2] for n in before if n[1] == target), None)
         t.insert(1)
-        assert initial_address == id(t.root)
+        after = collect_pointers(t.root)
+        after_node = next((n[:2] for n in after if n[1] == target), None)
+        assert after_node == before_node
 
 
     def test_static_root_addr_for_new_distant_child(self, bst_depth_three):
@@ -252,17 +267,11 @@ class TestDeletePrivate:
 
     def test_failed_delete_leaves_tree_unmodified(self, bst_depth_three):
         t = bst_depth_three
-        before = [n.value for n in (t.root, t.root.left, t.root.right,
-                                    t.root.left.left, t.root.left.right,
-                                    t.root.right.left, t.root.right.right
-                                    )]
+        before = collect_pointers(t.root)
         with pytest.raises(ValueError):
             t._delete(t.root, 100)
         
-        after = [n.value for n in (t.root, t.root.left, t.root.right,
-                                    t.root.left.left, t.root.left.right,
-                                    t.root.right.left, t.root.right.right
-                                    )]
+        after = collect_pointers(t.root)
         assert before == after
         assert len(t) == 7
 
@@ -274,39 +283,67 @@ class TestDeletePrivate:
     # 5   15 25  35
     def test_delete_mutates_target_pointer(self, bst_depth_three):
         t = bst_depth_three
-        initial_addr = id(t.root.right)
-        initial_value = t.root.right.value
-        initial_left_pointer_addr = id(t.root.right.left)
-        initial_left_pointer = t.root.right.left
-        initial_right_pointer_addr = id(t.root.right.right)
-        t._delete(t.root, 30)
-        assert initial_addr == id(t.root.right)
-        assert initial_value is not t.root.right.value
-        assert t.root.right.value == 35
-        assert initial_left_pointer_addr == id(t.root.right.left)
-        assert initial_left_pointer.value == t.root.right.left.value
-        assert initial_right_pointer_addr is not id(t.root.right.right)
-        assert t.root.right.right is None
+        target = 30
 
+        before = collect_pointers(t.root)
+        #n[1] is the node's value
+        before_node = next((n for n in before if n[1] == target), None)
+        target_address = before_node[0]
 
-    def test_delete_leaf_updates_parent_pointer(self, bst_depth_three):
+        t._delete(t.root, target)
+
+        after = collect_pointers(t.root)
+        after_node = next((n for n in after if n[0] == target_address), None)
+
+        assert before_node[0] == after_node[0]      #node address
+        assert before_node[1] != after_node[1]      #node value
+        assert before_node[2] == after_node[2]      #left pointer address
+        assert before_node[3] != after_node[3]      #right pointer address
+        assert after_node[1] != target
+        
+
+    def test_delete_left_leaf_mutates_parent_pointer(self, bst_depth_three):
         t = bst_depth_three
-        initial_address = id(t.root.left)
-        initial_value = t.root.left.value
-        initial_child_pointer = t.root.left.right
-        t._delete(t.root, 15)
-        assert initial_address == id(t.root.left)
-        assert initial_value == t.root.left.value
-        assert initial_child_pointer is not t.root.left.right
-        assert t.root.left.right is None
+        before = collect_pointers(t.root)
+        
+        delete_value = 5
+        delete_address = next((n[0] for n in before if n[1] == delete_value), None)
+
+        #n[2] is the parent node's left pointer
+        before_node = next((n for n in before if n[2] == delete_address), None)
+        target_address = before_node[0]
+
+        t._delete(t.root, delete_value)
+
+        after = collect_pointers(t.root)
+        after_node = next((n for n in after if n[0] == target_address), None)
+        
+        assert before_node[0] == after_node[0]      #node address
+        assert before_node[1] == after_node[1]      #node value
+        assert before_node[2] != after_node[2]      #left pointer address
+        assert before_node[3] == after_node[3]      #right pointer address
 
 
-    def test_new_node_has_null_pointers(self, bst_only_root):
-        t = bst_only_root
-        t._insert(t.root, 1)
-        new_node = t.root.left
-        assert new_node.left is None
-        assert new_node.right is None
+    def test_delete_right_leaf_mutates_parent_pointer(self, bst_depth_three):
+        t = bst_depth_three
+        before = collect_pointers(t.root)
+        
+        delete_value = 15
+        delete_address = next((n[0] for n in before if n[1] == delete_value), None)
+
+        #n[2] is the parent node's left pointer
+        before_node = next((n for n in before if n[3] == delete_address), None)
+        target_address = before_node[0]
+
+        t._delete(t.root, delete_value)
+
+        after = collect_pointers(t.root)
+        after_node = next((n for n in after if n[0] == target_address), None)
+        
+        assert before_node[0] == after_node[0]      #node address
+        assert before_node[1] == after_node[1]      #node value
+        assert before_node[2] == after_node[2]      #left pointer address
+        assert before_node[3] != after_node[3]      #right pointer address
 
 
 class TestDelete:
@@ -317,7 +354,7 @@ class TestDelete:
         assert t.root is None
 
 
-    def test_length_decrements_to_zero(self, bst_only_root):
+    def test_size_decrements_to_zero(self, bst_only_root):
         t = bst_only_root
         initial_size = len(t)
         t.delete(t.root.value)
@@ -360,12 +397,12 @@ class TestContainsPrivate:
         assert t._contains(t.root, 30)
 
 
-    def test_finds_left_child_with_recursion(self, bst_depth_three):
+    def test_finds_left_child_at_depth(self, bst_depth_three):
         t = bst_depth_three
         assert t._contains(t.root, 5)
 
 
-    def test_finds_right_child_with_recursion(self, bst_depth_three):
+    def test_finds_right_child_at_depth(self, bst_depth_three):
         t = bst_depth_three
         assert t._contains(t.root, 35)
 
@@ -373,7 +410,7 @@ class TestContainsPrivate:
     @pytest.mark.parametrize('target', [
         -1, 0, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 29, 31, 24, 36,
     ])
-    def test_false_with_recursion(self, target, bst_depth_three):
+    def test_not_found_at_depth(self, target, bst_depth_three):
         t = bst_depth_three
         assert t._contains(t.root, target) == False
 
