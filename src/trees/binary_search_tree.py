@@ -1,11 +1,11 @@
-from typing import Any, Optional
+from typing import Optional
 
 
 class BSTNode:
     def __init__(self, value: int) -> None:
         self.value = value
-        self.left: Optional[BST_Node] = None
-        self.right: Optional[BST_Node] = None
+        self.left: Optional[BSTNode] = None
+        self.right: Optional[BSTNode] = None
 
 
     def __str__(self):
@@ -31,7 +31,16 @@ class BinarySearchTree:
         return self.size
 
 
-    def _insert(self, node: Optional[BSTNode], value: int) -> BSTNode | None:
+    def _min_node(self, node: Optional[BSTNode]) -> BSTNode:
+        ''' Gets the bottom left Node in Tree beginning from any 
+        arbitrary Node.
+        '''
+        while node.left:
+            node = node.left
+        return node
+
+
+    def _insert(self, node: Optional[BSTNode], value: int) -> BSTNode:
         ''' Recursevely redraws the path from root to new Node to maintain pointers to all
             updated child Nodes.
         '''
@@ -52,27 +61,64 @@ class BinarySearchTree:
         try:
             self.root = self._insert(self.root, value)
         except ValueError as e:
-            raise e
+            raise ValueError(f'duplicate error: {e}')
         else:
             self.size += 1
 
 
-    def _remove(self, node: Optional[BSTNode], value: int):
-        pass 
+    def _delete(self, node: Optional[BSTNode], value: int) -> Optional[BSTNode]:
+        ''' When the target Node is found the self._min_node() helper will
+        search for the next highest value. It will always be in the bottom
+        left of the subtree where the target Node's right branch is root.
+
+        An opposite strategy may also be used where the next lowest value
+        replaces the target which would always be found in the bottom right
+        Node of the subtree beginning at the target Node's left branch.
+
+        More simply put, in this implementation, the next highest leaf
+        Node replaces the deleted target Node and is then deleted from
+        it's original position.
+        '''
+        if node is None: 
+            raise ValueError(f'{value} not found')
+
+        if value < node.value:
+            node.left = self._delete(node.left, value)
+        elif value > node.value:
+            node.right = self._delete(node.right, value)
+        else:
+            if node.left is None:
+                return node.right
+            if node.right is None:
+                return node.left
+            replacement = self._min_node(node.right)
+            node.value = replacement.value
+            node.right = self._delete(node.right, replacement.value)
+
+        return node
 
 
-    def remove(self, value: int) -> int | None:
-        pass
+    def delete(self, value: int) -> None: 
+        ''' Raises ValueError if value is not found in BST. Logically, a
+        ValueError will always raise if the BST is empty.
+        '''
+        try:
+            self.root = self._delete(self.root, value)
+        except ValueError as e:
+            raise ValueError(f'delete error: {e}')
+        else:
+            self.size -= 1
 
 
     def _contains(self, node: Optional[BSTNode], value: int) -> bool:
         if node is None:
             return False
-        if value < node.value:
+        elif value < node.value:
             return self._contains(node.left, value)
-        if value > node.value:
+        elif value > node.value:
             return self._contains(node.right, value)
-        if value == node.value:
+        else:
+            # value == node.value
             return True
 
 

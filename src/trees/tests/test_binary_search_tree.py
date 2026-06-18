@@ -10,9 +10,9 @@ def bst_only_root():
     return t
 
 
-@pytest.fixture
-def bst_depth_two():
-    t = BinarySearchTree()
+@pytest.fixture                         #      20
+def bst_depth_two():                    #     /  \
+    t = BinarySearchTree()              #   10    30
     t.root = BSTNode(20)
     t.root.left = BSTNode(10)
     t.root.right = BSTNode(30)
@@ -20,11 +20,11 @@ def bst_depth_two():
     return t
 
 
-@pytest.fixture
-def bst_depth_three(bst_depth_two):
-    t = bst_depth_two
-    left_child = t.root.left
-    left_child.left = BSTNode(5)
+@pytest.fixture                         #      20
+def bst_depth_three(bst_depth_two):     #     /  \
+    t = bst_depth_two                   #   10    30
+    left_child = t.root.left            #  /  \   / \
+    left_child.left = BSTNode(5)        # 5   15 25  35
     left_child.right = BSTNode(15)
     right_child = t.root.right
     right_child.left = BSTNode(25)
@@ -34,15 +34,15 @@ def bst_depth_three(bst_depth_two):
 
 
 def assert_bst_invariant(node, low=None, high=None):
-    ''' Recursive helper to check that left pointers are to nodes with
+    '''Recursive helper to check that left pointers are to nodes with
         smaller values and right pointers are to nodes with higher values.
     '''
     if node is None:
         return
     assert low is None or node.value > low
     assert high is None or node.value < high
-    return assert_bst_invariant(node.left, low, node.value)
-    return assert_bst_invariant(node.right, node.value, high)
+    assert_bst_invariant(node.left, low, node.value)
+    assert_bst_invariant(node.right, node.value, high)
 
 
 class TestSetup:
@@ -70,14 +70,14 @@ class TestBSTNode:
     def test_init(self):
         n = BSTNode(5)
         assert n.value == 5
-        assert n.left == None
-        assert n.right == None
+        assert n.left is None
+        assert n.right is None
 
 
 class TestBinarySearchTree:
     def test_init(self):
         t = BinarySearchTree()
-        assert t.root == None
+        assert t.root is None
         assert len(t) == 0
 
 
@@ -86,8 +86,40 @@ class TestBinarySearchTree:
         pass
 
 
+class TestMinimumNode:
+    def test_start_search_from_root_node(self, bst_depth_three):
+        t = bst_depth_three
+        assert t._min_node(t.root).value == 5
+
+
+    def test_start_search_from_intermediate_node(self, bst_depth_three):
+        t = bst_depth_three
+        n = t.root.left
+        assert t._min_node(n).value == 5
+
+        
+    def test_start_search_from_leaf_node(self, bst_depth_three):
+        t = bst_depth_three
+        n = t.root.left.left
+        assert t._min_node(n).value == 5
+
+
+    def test_returns_node_without_left_child(self, bst_only_root):
+        t = bst_only_root
+        t.root.right = BSTNode(20)
+        assert t._min_node(t.root).value == 10
+
+
+    def test_returns_intermediate_node(self, bst_only_root):
+        t = bst_only_root
+        t.root.left = BSTNode(1)
+        t.root.left.right = BSTNode(4)
+        t.root.left.right.left = BSTNode(3)
+        t.root.left.right.right = BSTNode(5)
+        assert t._min_node(t.root).value == 1
+
+        
 class TestInsertPrivate:
-    #TODO: this needs to include tests at many recursive levels - see contains tests
     def test_empty_tree_returns_new_node(self):
         t = BinarySearchTree()
         result = t._insert(t.root, 1)
@@ -97,36 +129,36 @@ class TestInsertPrivate:
     def test_smaller_value_update_left_pointer(self, bst_only_root):
         t = bst_only_root
         t._insert(t.root, 9)
-        assert t.root.left != None
-        assert t.root.right == None
+        assert t.root.left is not None
+        assert t.root.right is None
 
 
     def test_smaller_value_update_right_pointer(self, bst_only_root):
         t = bst_only_root
         t._insert(t.root, 11)
-        assert t.root.left == None
-        assert t.root.right != None
+        assert t.root.left is None
+        assert t.root.right is not None
 
 
     def test_new_node_has_null_pointers(self, bst_only_root):
         t = bst_only_root
         t._insert(t.root, 1)
         new_node = t.root.left
-        assert new_node.left == None
-        assert new_node.right == None
+        assert new_node.left is None
+        assert new_node.right is None
 
 
     def test_insert_duplicate_raises(self, bst_only_root):
         t = bst_only_root
         with pytest.raises(ValueError) as e:
-            t.insert(10)
+            t._insert(t.root, 10)
         assert str(e.value) == '10 is already in this BST'
 
 
 class TestInsert:
     def test_set_root(self):
         t = BinarySearchTree()
-        assert t.root == None
+        assert t.root is None
         t.insert(1)
         assert t.root.value == 1
 
@@ -142,7 +174,7 @@ class TestInsert:
         t = BinarySearchTree()
         initial_address = id(t.root)
         t.insert(50)
-        assert initial_address != id(t.root)
+        assert initial_address is not id(t.root)
 
 
     def test_static_root_addr_for_new_child(self, bst_only_root):
@@ -178,7 +210,7 @@ class TestInsert:
         t.insert(2)
         with pytest.raises(ValueError) as e:
             t.insert(2)
-        assert str(e.value) == '2 is already in this BST'
+        assert str(e.value) == 'duplicate error: 2 is already in this BST'
 
 
     @pytest.mark.parametrize('nodes', [
@@ -198,6 +230,119 @@ class TestInsert:
         assert_bst_invariant(t.root)
         assert len(t) == len(nodes)
     
+
+class TestDeletePrivate:
+    ''' The return value will be the root pointer to the entire structure.
+    Therefore, I can save the method's return value to a variable and test
+    that to the invariant helper.
+    '''
+    def test_empty_tree_raises(self):
+        t = BinarySearchTree()
+        with pytest.raises(ValueError) as e:
+            t._delete(t.root, 1)
+        assert str(e.value) == '1 not found'
+
+
+    def test_not_found_in_deep_tree_raises(self, bst_depth_three):
+        t = bst_depth_three
+        with pytest.raises(ValueError) as e:
+            t._delete(t.root, 100)
+        assert str(e.value) == '100 not found'
+
+
+    def test_failed_delete_leaves_tree_unmodified(self, bst_depth_three):
+        t = bst_depth_three
+        before = [n.value for n in (t.root, t.root.left, t.root.right,
+                                    t.root.left.left, t.root.left.right,
+                                    t.root.right.left, t.root.right.right
+                                    )]
+        with pytest.raises(ValueError):
+            t._delete(t.root, 100)
+        
+        after = [n.value for n in (t.root, t.root.left, t.root.right,
+                                    t.root.left.left, t.root.left.right,
+                                    t.root.right.left, t.root.right.right
+                                    )]
+        assert before == after
+        assert len(t) == 7
+
+
+    #      20
+    #     /  \
+    #   10    30
+    #  /  \   / \
+    # 5   15 25  35
+    def test_delete_mutates_target_pointer(self, bst_depth_three):
+        t = bst_depth_three
+        initial_addr = id(t.root.right)
+        initial_value = t.root.right.value
+        initial_left_pointer_addr = id(t.root.right.left)
+        initial_left_pointer = t.root.right.left
+        initial_right_pointer_addr = id(t.root.right.right)
+        t._delete(t.root, 30)
+        assert initial_addr == id(t.root.right)
+        assert initial_value is not t.root.right.value
+        assert t.root.right.value == 35
+        assert initial_left_pointer_addr == id(t.root.right.left)
+        assert initial_left_pointer.value == t.root.right.left.value
+        assert initial_right_pointer_addr is not id(t.root.right.right)
+        assert t.root.right.right is None
+
+
+    def test_delete_leaf_updates_parent_pointer(self, bst_depth_three):
+        t = bst_depth_three
+        initial_address = id(t.root.left)
+        initial_value = t.root.left.value
+        initial_child_pointer = t.root.left.right
+        t._delete(t.root, 15)
+        assert initial_address == id(t.root.left)
+        assert initial_value == t.root.left.value
+        assert initial_child_pointer is not t.root.left.right
+        assert t.root.left.right is None
+
+
+    def test_new_node_has_null_pointers(self, bst_only_root):
+        t = bst_only_root
+        t._insert(t.root, 1)
+        new_node = t.root.left
+        assert new_node.left is None
+        assert new_node.right is None
+
+
+class TestDelete:
+    def test_removes_root(self, bst_only_root):
+        t = bst_only_root
+        assert t.root is not None
+        t.delete(10)
+        assert t.root is None
+
+
+    def test_length_decrements_to_zero(self, bst_only_root):
+        t = bst_only_root
+        initial_size = len(t)
+        t.delete(t.root.value)
+        assert len(t) == initial_size -1
+
+
+    def test_delete_decrements_size(self, bst_depth_two):
+        t = bst_depth_two
+        initial_size = len(t)
+        t.delete(30)
+        assert len(t) == initial_size - 1
+
+
+    def test_delete_intermediate_node(self, bst_depth_three):
+        t = bst_depth_three
+        t.delete(10)
+        assert_bst_invariant(t.root)
+
+
+    def test_not_found_raises(self, bst_depth_three):
+        t = bst_depth_three
+        with pytest.raises(ValueError) as e:
+            t.delete(100)
+        assert str(e.value) == 'delete error: 100 not found'
+
 
 class TestContainsPrivate:
     def test_false_for_empty_tree(self):
