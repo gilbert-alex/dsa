@@ -126,6 +126,57 @@ class BinarySearchTree:
         return self._contains(self.root, value)
 
 
+    def _inorder(self, node: Optional[BSTNode], result: list[int]) -> None:
+        if not node:
+            return
+
+        self._inorder(node.left, result)
+        result.append(node.value)
+        self._inorder(node.right, result)
+
+
+    def inorder(self) -> list[int]:
+        ''' In ascending order
+        '''
+        result: list[int] = []
+        self._inorder(self.root, result)
+        return result
+
+
+    def _preorder(self, node: Optional[BSTNode], result: list[int]) -> None:
+        if not node:
+            return
+
+        result.append(node.value)
+        self._preorder(node.left, result)
+        self._preorder(node.right, result)
+
+
+    def preorder(self) -> list[int]:
+        ''' Top to bottom, left to right
+        '''
+        result: list[int] = []
+        self._preorder(self.root, result)
+        return result
+
+
+    def _postorder(self, node: Optional[BSTNode], result: list[int]) -> None:
+        if not node:
+            return
+
+        self._postorder(node.left, result)
+        self._postorder(node.right, result)
+        result.append(node.value)
+
+
+    def postorder(self) -> list[int]:
+        ''' Bottom to top, left to right
+        '''
+        result: list[int] = []
+        self._postorder(self.root, result)
+        return result
+
+
 if __name__ == "__main__":
     n = BSTNode(42)
     print(type(n.value))

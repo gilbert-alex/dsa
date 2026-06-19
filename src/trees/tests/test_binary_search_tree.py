@@ -67,12 +67,14 @@ class TestSetup:
 
     #TODO: assert when traversals are built
     def test_bst_depth_two(self, bst_depth_two):
-        pass
+        t = bst_depth_two
+        assert t.inorder() == [10, 20, 30]
 
 
     #TODO: assert when traversals are built
     def test_bst_depth_three(self, bst_depth_three):
-        pass
+        t = bst_depth_three
+        assert t.inorder() == [5, 10, 15, 20, 25, 30, 35]
 
 
 class TestBSTNode:
@@ -466,3 +468,78 @@ class TestContains:
     def test_empty_tree_returns_false(self):
         t = BinarySearchTree()
         assert t.contains(1) == False
+
+
+class TestInOrder:
+    def test_empty_tree_returns_empty_list(self):
+        t = BinarySearchTree()
+        assert t.inorder() == []
+
+
+    def test_left_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 12, 11, 13]:
+            t.insert(n)
+        assert t.inorder() == [10, 11, 12, 13]
+
+
+    def test_right_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 8, 9, 7]:
+            t.insert(n)
+        assert t.inorder() == [7, 8, 9, 10]
+
+
+    def test_full_tree(self, bst_depth_three):
+        t = bst_depth_three
+        assert t.inorder() == [5, 10, 15, 20, 25, 30, 35]
+
+
+class TestPreOrder:
+    def test_empty_tree_returns_empty_list(self):
+        t = BinarySearchTree()
+        assert t.preorder() == []
+
+
+    def test_left_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 12, 11, 13]:
+            t.insert(n)
+        assert t.preorder() == [10, 12, 11, 13]
+
+
+    def test_right_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 8, 9, 7]:
+            t.insert(n)
+        assert t.preorder() == [10, 8, 7, 9]
+
+
+    def test_full_tree(self, bst_depth_three):
+        t = bst_depth_three
+        assert t.preorder() == [20, 10, 5, 15, 30, 25, 35]
+
+
+class TestPostOrder:
+    def test_empty_tree_returns_empty_list(self):
+        t = BinarySearchTree()
+        assert t.postorder() == []
+
+
+    def test_left_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 12, 11, 13]:
+            t.insert(n)
+        assert t.postorder() == [11, 13, 12, 10]
+
+
+    def test_right_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 8, 9, 7]:
+            t.insert(n)
+        assert t.postorder() == [7, 9, 8, 10]
+
+
+    def test_full_tree(self, bst_depth_three):
+        t = bst_depth_three
+        assert t.postorder() == [5, 15, 10, 25, 35, 30, 20]
