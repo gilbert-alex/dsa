@@ -1,4 +1,5 @@
 from typing import Optional
+from stacks_and_queues.queue import LinkedListQueue as Queue
 
 
 class BSTNode:
@@ -136,7 +137,7 @@ class BinarySearchTree:
 
 
     def inorder(self) -> list[int]:
-        ''' In ascending order
+        ''' In ascending order.
         '''
         result: list[int] = []
         self._inorder(self.root, result)
@@ -153,7 +154,7 @@ class BinarySearchTree:
 
 
     def preorder(self) -> list[int]:
-        ''' Top to bottom, left to right
+        ''' Top to bottom, left to right depth-first.
         '''
         result: list[int] = []
         self._preorder(self.root, result)
@@ -170,10 +171,34 @@ class BinarySearchTree:
 
 
     def postorder(self) -> list[int]:
-        ''' Bottom to top, left to right
+        ''' Bottom to top, left to right depth-first.
         '''
         result: list[int] = []
         self._postorder(self.root, result)
+        return result
+
+
+    def _levelorder(self, node: Optional[BSTNode], result: list[int], 
+                    queue: Queue
+                    ) -> None:
+        if not node:
+            return
+        if node.left:
+            queue.enqueue(node.left)
+        if node.right:
+            queue.enqueue(node.right)
+
+        result.append(node.value)
+        if not queue.is_empty():
+            self._levelorder(queue.dequeue(), result, queue)
+
+
+    def levelorder(self) -> list[int]:
+        ''' Top to bottom, left to right breadth-first.
+        '''
+        result: list[int] = []
+        queue: Queue[BSTNode] = Queue()
+        self._levelorder(self.root, result, queue)
         return result
 
 

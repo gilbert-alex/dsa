@@ -65,13 +65,11 @@ class TestSetup:
         assert_bst_invariant(t.root)
 
 
-    #TODO: assert when traversals are built
     def test_bst_depth_two(self, bst_depth_two):
         t = bst_depth_two
         assert t.inorder() == [10, 20, 30]
 
 
-    #TODO: assert when traversals are built
     def test_bst_depth_three(self, bst_depth_three):
         t = bst_depth_three
         assert t.inorder() == [5, 10, 15, 20, 25, 30, 35]
@@ -543,3 +541,28 @@ class TestPostOrder:
     def test_full_tree(self, bst_depth_three):
         t = bst_depth_three
         assert t.postorder() == [5, 15, 10, 25, 35, 30, 20]
+
+
+class TestLevelOrder:
+    def test_empty_tree_returns_empty_list(self):
+        t = BinarySearchTree()
+        assert t.levelorder() == []
+
+
+    def test_left_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 12, 11, 13]:
+            t.insert(n)
+        assert t.levelorder() == [10, 12, 11, 13]
+
+
+    def test_right_branch_only(self):
+        t = BinarySearchTree()
+        for n in [10, 8, 9, 7]:
+            t.insert(n)
+        assert t.levelorder() == [10, 8, 7, 9]
+
+
+    def test_full_tree(self, bst_depth_three):
+        t = bst_depth_three
+        assert t.levelorder() == [20, 10, 30, 5, 15, 25, 35]
