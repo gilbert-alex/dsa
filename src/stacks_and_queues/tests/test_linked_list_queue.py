@@ -29,6 +29,20 @@ def test_initialization():
         llq.dequeue()
     
 
+class TestWhileCondition:
+    def test_false(self):
+        llq = LinkedListQueue()
+        result = bool(llq)
+        assert result == False
+
+
+    def test_true(self):
+        llq = LinkedListQueue()
+        llq.enqueue(1)
+        result = bool(llq)
+        assert result == True
+
+
 class TestEnqueue():
     def test_enqueue_to_empty_stack(self, empty_llq):
         empty_llq.enqueue(1)
