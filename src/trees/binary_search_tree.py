@@ -1,4 +1,3 @@
-import inspect
 from typing import Optional
 from stacks_and_queues.queue import LinkedListQueue as Queue
 
@@ -27,7 +26,6 @@ class BinarySearchTree:
     def __init__(self) -> None:
         self.root: Optional[BSTNode] = None
         self.size: int = 0
-        self.max_depth: int = 0
 
 
     def __len__(self) -> int:
@@ -140,7 +138,7 @@ class BinarySearchTree:
 
     # === Traversals ===
     def inorder(self) -> list[int]:
-        ''' In ascending order.
+        ''' In ascending order depth-first.
         '''
         result: list[int] = []
         self._inorder(self.root, result)
@@ -181,12 +179,10 @@ class BinarySearchTree:
         return result
 
 
-    #TODO: remove call counter and print statements and import
     def _levelorder(self, 
                     node: Optional[BSTNode], 
                     result: list[int], 
                     queue: Queue,
-                    call_counter: int,
                     ) -> None:
         if not node:
             return
@@ -195,25 +191,31 @@ class BinarySearchTree:
         if node.right:
             queue.enqueue(node.right)
 
-        depth = len(inspect.stack())
-        self.max_depth = max(self.max_depth, depth)
-        print(f'depth={depth}, max so far={self.max_depth}, node={node.value}')
-        call_counter += 1
-        print(f'call count: {call_counter}')
-
         result.append(node.value)
         if not queue.is_empty():
-            self._levelorder(queue.dequeue(), result, queue, call_counter)
+            self._levelorder(queue.dequeue(), result, queue)
 
 
-    #TODO: remove call counter
     def levelorder(self) -> list[int]:
         ''' Top to bottom, left to right breadth-first.
         '''
         result: list[int] = []
+
+        if self.root is None:
+            return result
+
         queue: Queue[BSTNode] = Queue()
-        call_counter: int = 0
-        self._levelorder(self.root, result, queue, call_counter)
+        queue.enqueue(self.root)
+
+        while queue:
+            node = queue.dequeue()
+            result.append(node.value)
+
+            if node.left:
+                queue.enqueue(node.left)
+            if node.right:
+                queue.enqueue(node.right)
+
         return result
 
 

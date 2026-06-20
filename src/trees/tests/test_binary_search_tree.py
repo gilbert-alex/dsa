@@ -98,7 +98,7 @@ class TestSetup:
         "bst_depth_two",
         "bst_depth_three",
     ])
-    def test_invariants(self, tree_fixture, request):
+    def test_fixture_invariants(self, tree_fixture, request):
         t = request.getfixturevalue(tree_fixture)
         assert_bst_invariant(t.root)
 
@@ -636,12 +636,10 @@ class TestLevelOrder:
             t.levelorder()
         except RecursionError:
             print(f'recursion limit: {sys.getrecursionlimit()}')
-            raise
-        finally:
             print(f'test name: {self.__class__.__name__}')
-            print(f'max depth: {t.max_depth}')
             print(f'tree height: {t.height(t.root)}')
             print(f'tree size: {len(t)}')
+            raise
 
 
     def test_length_matches_tree_size(self, bst_really_big):
