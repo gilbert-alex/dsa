@@ -1,6 +1,9 @@
+import sys
+import random
 import pytest
 from ..binary_search_tree import BSTNode, BinarySearchTree
 
+REALLY_BIG_TREE_SIZE = 2000
 
 @pytest.fixture
 def bst_only_root():
@@ -30,6 +33,41 @@ def bst_depth_three(bst_depth_two):     #     /  \
     right_child.left = BSTNode(25)
     right_child.right = BSTNode(35)
     t.size += 4
+    return t
+
+
+@pytest.fixture
+def bst_really_big():
+    ''' This try/catch block is intented to identify RecursionErrors happening
+    in the build of the tree. With a 100k range for random ints, this build 
+    raised RecursionError at the following:
+        run 1: i = 2,906; h = 961
+        run 2: i = 9,920; h = 961
+        run 3: i = 2,915; h = 961
+        run 4: i = 2,808; h = 961 
+        run 5: i = 2,884; h = 961 
+
+    The note above applies to this code which provides an insufficiently 
+    distributed sample for proper use of a tree structure. Replaced with the
+    random.sample() expression below. The build succeeds with random.sample()
+    even if the range == the size of the sample.
+
+    unique_values = set()
+    while len(unique_values) < 5000:
+        unique_values.add(random.randint(1, 100000))
+    '''
+    t = BinarySearchTree()
+    unique_values = random.sample(range(1, REALLY_BIG_TREE_SIZE*10), REALLY_BIG_TREE_SIZE)
+    try:
+        for i, v in enumerate(unique_values):
+            t.insert(v)
+    except RecursionError:
+        print(f'insertion completed: {i}')
+        print(f'tree height at failure: {t.height(t.root)}')
+        raise
+    # This msg will print to stdout on any test fail using this fixture
+    # To see this value w/o failures run with `pytest -s`
+    print(f'\nBST height is: {t.height(t.root)}')      
     return t
 
 
@@ -73,6 +111,12 @@ class TestSetup:
     def test_bst_depth_three(self, bst_depth_three):
         t = bst_depth_three
         assert t.inorder() == [5, 10, 15, 20, 25, 30, 35]
+
+
+    def test_bst_really_big(self, bst_really_big):
+        t = bst_really_big
+        assert len(t) == REALLY_BIG_TREE_SIZE
+        assert_bst_invariant(t.root)
 
 
 class TestBSTNode:
@@ -493,6 +537,12 @@ class TestInOrder:
         assert t.inorder() == [5, 10, 15, 20, 25, 30, 35]
 
 
+    def test_length_matches_tree_size(self, bst_really_big):
+        t = bst_really_big
+        result = t.inorder()
+        assert len(result) == len(t)
+
+
 class TestPreOrder:
     def test_empty_tree_returns_empty_list(self):
         t = BinarySearchTree()
@@ -516,6 +566,12 @@ class TestPreOrder:
     def test_full_tree(self, bst_depth_three):
         t = bst_depth_three
         assert t.preorder() == [20, 10, 5, 15, 30, 25, 35]
+
+
+    def test_length_matches_tree_size(self, bst_really_big):
+        t = bst_really_big
+        result = t.preorder()
+        assert len(result) == len(t)
 
 
 class TestPostOrder:
@@ -543,6 +599,12 @@ class TestPostOrder:
         assert t.postorder() == [5, 15, 10, 25, 35, 30, 20]
 
 
+    def test_length_matches_tree_size(self, bst_really_big):
+        t = bst_really_big
+        result = t.postorder()
+        assert len(result) == len(t)
+
+
 class TestLevelOrder:
     def test_empty_tree_returns_empty_list(self):
         t = BinarySearchTree()
@@ -566,3 +628,23 @@ class TestLevelOrder:
     def test_full_tree(self, bst_depth_three):
         t = bst_depth_three
         assert t.levelorder() == [20, 10, 30, 5, 15, 25, 35]
+
+
+    def test_recursion_limit(self, bst_really_big):
+        t = bst_really_big
+        try:
+            t.levelorder()
+        except RecursionError:
+            print(f'recursion limit: {sys.getrecursionlimit()}')
+            raise
+        finally:
+            print(f'test name: {self.__class__.__name__}')
+            print(f'max depth: {t.max_depth}')
+            print(f'tree height: {t.height(t.root)}')
+            print(f'tree size: {len(t)}')
+
+
+    def test_length_matches_tree_size(self, bst_really_big):
+        t = bst_really_big
+        result = t.levelorder()
+        assert len(result) == len(t)

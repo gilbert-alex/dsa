@@ -1,3 +1,4 @@
+import inspect
 from typing import Optional
 from stacks_and_queues.queue import LinkedListQueue as Queue
 
@@ -26,6 +27,7 @@ class BinarySearchTree:
     def __init__(self) -> None:
         self.root: Optional[BSTNode] = None
         self.size: int = 0
+        self.max_depth: int = 0
 
 
     def __len__(self) -> int:
@@ -136,6 +138,7 @@ class BinarySearchTree:
         self._inorder(node.right, result)
 
 
+    # === Traversals ===
     def inorder(self) -> list[int]:
         ''' In ascending order.
         '''
@@ -178,8 +181,12 @@ class BinarySearchTree:
         return result
 
 
-    def _levelorder(self, node: Optional[BSTNode], result: list[int], 
-                    queue: Queue
+    #TODO: remove call counter and print statements and import
+    def _levelorder(self, 
+                    node: Optional[BSTNode], 
+                    result: list[int], 
+                    queue: Queue,
+                    call_counter: int,
                     ) -> None:
         if not node:
             return
@@ -188,18 +195,33 @@ class BinarySearchTree:
         if node.right:
             queue.enqueue(node.right)
 
+        depth = len(inspect.stack())
+        self.max_depth = max(self.max_depth, depth)
+        print(f'depth={depth}, max so far={self.max_depth}, node={node.value}')
+        call_counter += 1
+        print(f'call count: {call_counter}')
+
         result.append(node.value)
         if not queue.is_empty():
-            self._levelorder(queue.dequeue(), result, queue)
+            self._levelorder(queue.dequeue(), result, queue, call_counter)
 
 
+    #TODO: remove call counter
     def levelorder(self) -> list[int]:
         ''' Top to bottom, left to right breadth-first.
         '''
         result: list[int] = []
         queue: Queue[BSTNode] = Queue()
-        self._levelorder(self.root, result, queue)
+        call_counter: int = 0
+        self._levelorder(self.root, result, queue, call_counter)
         return result
+
+
+    # === Utilities ===
+    def height(self, node) -> int:
+        if node is None:
+            return 0
+        return 1 + max(self.height(node.left), self.height(node.right))
 
 
 if __name__ == "__main__":
