@@ -47,13 +47,13 @@ class BinarySearchTree:
         '''
         if node is None:
             return BSTNode(value)
-        if value < node.value:
-            node.left = self._insert(node.left, value)
-        if value > node.value:
-            node.right = self._insert(node.right, value)
 
         if value == node.value:
             raise ValueError(f'{value} is already in this BST')
+        elif value < node.value:
+            node.left = self._insert(node.left, value)
+        else:
+            node.right = self._insert(node.right, value)
 
         return node
 
@@ -114,12 +114,12 @@ class BinarySearchTree:
     def _contains(self, node: Optional[BSTNode], value: int) -> bool:
         if node is None:
             return False
-        elif value < node.value:
+
+        if value < node.value:
             return self._contains(node.left, value)
         elif value > node.value:
             return self._contains(node.right, value)
         else:
-            # value == node.value
             return True
 
 
@@ -177,23 +177,6 @@ class BinarySearchTree:
         result: list[int] = []
         self._postorder(self.root, result)
         return result
-
-
-    def _levelorder(self, 
-                    node: Optional[BSTNode], 
-                    result: list[int], 
-                    queue: Queue,
-                    ) -> None:
-        if not node:
-            return
-        if node.left:
-            queue.enqueue(node.left)
-        if node.right:
-            queue.enqueue(node.right)
-
-        result.append(node.value)
-        if not queue.is_empty():
-            self._levelorder(queue.dequeue(), result, queue)
 
 
     def levelorder(self) -> list[int]:

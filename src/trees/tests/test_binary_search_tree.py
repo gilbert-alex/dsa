@@ -630,18 +630,6 @@ class TestLevelOrder:
         assert t.levelorder() == [20, 10, 30, 5, 15, 25, 35]
 
 
-    def test_recursion_limit(self, bst_really_big):
-        t = bst_really_big
-        try:
-            t.levelorder()
-        except RecursionError:
-            print(f'recursion limit: {sys.getrecursionlimit()}')
-            print(f'test name: {self.__class__.__name__}')
-            print(f'tree height: {t.height(t.root)}')
-            print(f'tree size: {len(t)}')
-            raise
-
-
     def test_length_matches_tree_size(self, bst_really_big):
         t = bst_really_big
         result = t.levelorder()
