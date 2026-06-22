@@ -1,20 +1,23 @@
-from typing import Any, Optional
+from typing import TypeVar, Generic, Optional
 
 
-class Node:
-    def __init__(self, value: Any) -> None:
+T = TypeVar('T')
+
+
+class Node(Generic[T]):
+    def __init__(self, value: T) -> None:
         '''
         An object to maintain values and pointers for Nodes in a Singly Linked List.
         '''
-        self.value = value
-        self.next: Optional[Node] = None
+        self.value: T = value
+        self.next: Optional[Node[T]] = None
 
 
-class SinglyLinkedList:
-    def __init__(self):
-        self.head: Optional[Node] = None
-        self.tail: Optional[Node] = None
-        self.length = 0
+class SinglyLinkedList(Generic[T]):
+    def __init__(self) -> None:
+        self.head: Optional[Node[T]] = None
+        self.tail: Optional[Node[T]] = None
+        self.length: int = 0
 
 
     def __repr__(self):
@@ -41,7 +44,7 @@ class SinglyLinkedList:
         return self.length
 
 
-    def prepend(self, value: Any) -> None:
+    def prepend(self, value: T) -> None:
         '''
         Add a new Node to the head of the linked list.
         O(1) time and O(1) space
@@ -59,7 +62,7 @@ class SinglyLinkedList:
         self.head = new_node
 
 
-    def append_slow(self, value: Any) -> None:
+    def append_slow(self, value: T) -> None:
         ''' 
         Add a new Node to the tail of the linked list.
         O(n) time and O(1) space
@@ -90,32 +93,34 @@ class SinglyLinkedList:
                 current = current.next
 
 
-    def append_fast(self, value: Any) -> None:
+    def append_fast(self, value: T) -> None:
         '''
         Add a new Node to the tail of the linked list.
         O(1) time and O(1) space
         No list traversal is necessary because a tail pointer is maintained.
         '''
-        new_node = Node(value)
+        new_node: Node[T] = Node(value)
         self.length += 1
 
         if not self.head:
             self.head = new_node
             self.tail = new_node
             return
+
+        assert self.tail is not None    # This is to make MyPy happy
         
         self.tail.next = new_node
         self.tail = new_node
 
 
-    def delete(self, value: Any) -> None:
+    def delete(self, value: T) -> None:
         ''' 
         Delete first node with a given value. 
         O(n) time and O(1) space
         Time complexity cannot be reduced without a way to randomly access nodes.
         '''
-        current = self.head
-        previous = None
+        current: Optional[Node[T]] = self.head
+        previous: Optional[Node[T]] = None
 
         if not current:
             raise ValueError('List is empty.')
@@ -146,7 +151,7 @@ class SinglyLinkedList:
         raise ValueError(f'{value} not found.')
 
 
-    def count(self, target: Any) -> int:
+    def count(self, target: T) -> int:
         ''' 
         Returns count of the times target is found in the list.
         O(n) time and O(1) space
@@ -166,15 +171,15 @@ class SinglyLinkedList:
         return counter
 
 
-    def positions_of(self, target: Any) -> list[int]:
+    def positions_of(self, target: T) -> list[int]:
         ''' 
         Returns list of indices where target is found in the list.
         O(n) time and O(1) space
         Time complexity cannot be reduced without a way to randomly access nodes.
         '''
-        current = self.head
-        counter = 0
-        indices = []
+        current: Optional[Node[T]] = self.head
+        counter: int = 0
+        indices: list[int] = []
 
         if not current:
             return indices
@@ -188,23 +193,26 @@ class SinglyLinkedList:
         return indices
 
 
-    def to_list(self) -> list[Any]:
+    def to_list(self) -> list[T]:
         '''
         Returns a List of the LinkedList Node values.
         O(n) time and O(n) space
         '''
-        result = []
-        current = self.head
+        result: list[T] = []
+        current: Optional[Node[T]] = self.head
+
         while current:
             result.append(current.value)
             current = current.next
+
         return result
 
 
 if __name__ == "__main__":
-    sll = SinglyLinkedList()
+    sll: SinglyLinkedList[int] = SinglyLinkedList()
     sll.append_fast(1)
     sll.append_fast(2)
     print(sll)
     print(repr(sll))
     print(len(sll))
+    print(sll.to_list())

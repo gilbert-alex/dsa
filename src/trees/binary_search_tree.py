@@ -1,12 +1,15 @@
-from typing import Optional
+from typing import TypeVar, Generic, Optional
 from stacks_and_queues.queue import LinkedListQueue as Queue
 
 
-class BSTNode:
-    def __init__(self, value: int) -> None:
+T = TypeVar('T')
+
+
+class BSTNode(Generic[T]):
+    def __init__(self, value: T) -> None:
         self.value = value
-        self.left: Optional[BSTNode] = None
-        self.right: Optional[BSTNode] = None
+        self.left: Optional[BSTNode[T]] = None
+        self.right: Optional[BSTNode[T]] = None
 
 
     def __str__(self):
@@ -24,7 +27,7 @@ class BinarySearchTree:
     ''' For simplicity, this tree will initially only handle integers.
     '''
     def __init__(self) -> None:
-        self.root: Optional[BSTNode] = None
+        self.root: Optional[BSTNode[int]] = None
         self.size: int = 0
 
 
@@ -32,16 +35,18 @@ class BinarySearchTree:
         return self.size
 
 
-    def _min_node(self, node: Optional[BSTNode]) -> BSTNode:
+    def _min_node(self, node: Optional[BSTNode[int]]) -> BSTNode:
         ''' Gets the bottom left Node in Tree beginning from any 
         arbitrary Node.
         '''
+        assert node is not None     # To make Pytest happy
+
         while node.left:
             node = node.left
         return node
 
 
-    def _insert(self, node: Optional[BSTNode], value: int) -> BSTNode:
+    def _insert(self, node: Optional[BSTNode[int]], value: int) -> BSTNode:
         ''' Recursevely redraws the path from root to new Node to maintain pointers to all
             updated child Nodes.
         '''
@@ -67,7 +72,7 @@ class BinarySearchTree:
             self.size += 1
 
 
-    def _delete(self, node: Optional[BSTNode], value: int) -> Optional[BSTNode]:
+    def _delete(self, node: Optional[BSTNode[int]], value: int) -> Optional[BSTNode]:
         ''' When the target Node is found the self._min_node() helper will
         search for the next highest value. It will always be in the bottom
         left of the subtree where the target Node's right branch is root.
@@ -111,7 +116,7 @@ class BinarySearchTree:
             self.size -= 1
 
 
-    def _contains(self, node: Optional[BSTNode], value: int) -> bool:
+    def _contains(self, node: Optional[BSTNode[int]], value: int) -> bool:
         if node is None:
             return False
 
@@ -127,7 +132,7 @@ class BinarySearchTree:
         return self._contains(self.root, value)
 
 
-    def _inorder(self, node: Optional[BSTNode], result: list[int]) -> None:
+    def _inorder(self, node: Optional[BSTNode[int]], result: list[int]) -> None:
         if not node:
             return
 
@@ -145,7 +150,7 @@ class BinarySearchTree:
         return result
 
 
-    def _preorder(self, node: Optional[BSTNode], result: list[int]) -> None:
+    def _preorder(self, node: Optional[BSTNode[int]], result: list[int]) -> None:
         if not node:
             return
 
@@ -162,7 +167,7 @@ class BinarySearchTree:
         return result
 
 
-    def _postorder(self, node: Optional[BSTNode], result: list[int]) -> None:
+    def _postorder(self, node: Optional[BSTNode[int]], result: list[int]) -> None:
         if not node:
             return
 
@@ -187,7 +192,7 @@ class BinarySearchTree:
         if self.root is None:
             return result
 
-        queue: Queue[BSTNode] = Queue()
+        queue: Queue[BSTNode[int]] = Queue()
         queue.enqueue(self.root)
 
         while queue:
@@ -210,7 +215,7 @@ class BinarySearchTree:
 
 
 if __name__ == "__main__":
-    n = BSTNode(42)
-    print(type(n.value))
-    print(type(n))
-    print(repr(n))
+    t: BinarySearchTree = BinarySearchTree()
+    for i in [50, 40, 60]:
+        t.insert(i)
+    print(t.levelorder())
