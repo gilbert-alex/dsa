@@ -41,6 +41,7 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │   │   │   └── test_singly_linked_list.py
 │   │   ├── README.md
 │   │   ├── doubly_linked_list.py
+│   │   ├── py.typed
 │   │   └── singly_linked_list.py
 │   ├── sorting/
 │   ├── stacks_and_queues/
@@ -50,13 +51,16 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │   │   │   ├── test_list_queue.py
 │   │   │   └── test_list_stack.py
 │   │   ├── README.md
+│   │   ├── py.typed
 │   │   ├── queue.py
 │   │   └── stack.py
-│   └── trees/
-│       ├── tests/
-│       │   └── test_binary_search_tree.py
-│       ├── README.md
-│       └── binary_search_tree.py
+│   ├── trees/
+│   │   ├── tests/
+│   │   │   └── test_binary_search_tree.py
+│   │   ├── README.md
+│   │   ├── binary_search_tree.py
+│   │   └── py.typed
+│   └── py.typed
 ├── README.md
 └── mypy.ini
 ```
