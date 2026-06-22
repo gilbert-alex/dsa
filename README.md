@@ -57,6 +57,7 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │       │   └── test_binary_search_tree.py
 │       ├── README.md
 │       └── binary_search_tree.py
-└── README.md
+├── README.md
+└── mypy.ini
 ```
 <!-- TREE_END -->
