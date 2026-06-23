@@ -1,21 +1,24 @@
-from typing import Any, Optional
+from typing import TypeVar, Generic, Optional
 
 
-class Node:
+T = TypeVar('T')
+
+
+class Node(Generic[T]):
     '''
     An object to maintain values and pointers for Nodes in a Doubly Linked List.
     '''
-    def __init__(self, value: Any) -> None:
-        self.value = value
-        self.previous: Optional[Node] = None
-        self.next: Optional[Node] = None
+    def __init__(self, value: T) -> None:
+        self.value: T = value
+        self.previous: Optional[Node[T]] = None
+        self.next: Optional[Node[T]] = None
 
 
-class DoublyLinkedList:
+class DoublyLinkedList(Generic[T]):
     def __init__(self) -> None:
-        self.head: Optional[Node] = None
-        self.tail: Optional[Node] = None
-        self.length = 0
+        self.head: Optional[Node[T]] = None
+        self.tail: Optional[Node[T]] = None
+        self.length: int = 0
 
 
     def __repr__(self):
@@ -41,14 +44,14 @@ class DoublyLinkedList:
         return self.length
 
 
-    def prepend(self, value: Any) -> None:
+    def prepend(self, value: T) -> None:
         '''
         Add a new Node to the head of the linked list.
         O(1) time and O(1) space.
         No list traversal is necessary because a head pointer is maintained.
         '''
-        new_node = Node(value)
-        start = self.head
+        new_node: Node[T] = Node(value)
+        start: Optional[Node[T]] = self.head
         self.length += 1
 
         if not start:
@@ -61,14 +64,14 @@ class DoublyLinkedList:
         self.head = new_node
 
 
-    def append(self, value: Any) -> None:
+    def append(self, value: T) -> None:
         '''
         Add a new Node to the tail of the linked list.
         O(1) time and O(1) space.
         No list traversal is necessary because a tail pointer is maintained.
         '''
-        new_node = Node(value)
-        end = self.tail
+        new_node: Node[T] = Node(value)
+        end: Optional[Node[T]] = self.tail
         self.length += 1
 
         if not end:
@@ -81,7 +84,7 @@ class DoublyLinkedList:
         self.tail = new_node
 
 
-    def delete_first(self, value: Any, from_end: bool = False) -> None:
+    def delete_first(self, value: T, from_end: bool = False) -> None:
         '''
         Delete the first occurance of a value starting from the linked list
         head, by default. search will start from the
@@ -93,7 +96,7 @@ class DoublyLinkedList:
         flag to change behavior; but I wanted to try this with turnary operators
         and what the test suite would look like. 
         '''
-        current = (self.head if not from_end else self.tail)
+        current: Optional[Node[T]] = (self.head if not from_end else self.tail)
 
         while current:
             if current.value == value:
@@ -102,6 +105,7 @@ class DoublyLinkedList:
                     self.tail = None
                 elif not current.previous:
                     self.head = current.next
+                    assert self.head is not None        # Silences linters
                     self.head.previous = None
                 elif not current.next:
                     self.tail = current.previous
@@ -117,14 +121,14 @@ class DoublyLinkedList:
         raise ValueError(f'{value} not found.')
 
 
-    def delete_all(self, value: Any) -> None:
+    def delete_all(self, value: T) -> None:
         '''
         Delete all nodes with a given value.
         O(n) time and O(1) space.
         Time complexity cannot be reduced without a way to randomly access nodes.
         '''
-        current = self.head
-        initial_length = self.length
+        current: Optional[Node[T]] = self.head
+        initial_length: int = self.length
 
         while current:
             if current.value == value:
@@ -132,6 +136,7 @@ class DoublyLinkedList:
                     self.head = None
                     self.tail = None
                 elif not current.previous:
+                    assert current.next is not None     # Silences linters
                     current.next.previous = None
                     self.head = current.next
                 elif not current.next:
@@ -148,14 +153,14 @@ class DoublyLinkedList:
         if self.length == initial_length:
             raise ValueError(f'{value} not found.')
 
-    def count(self, target: Any) -> int:
+    def count(self, target: T) -> int:
         ''' 
         Returns count of the times target is found in the list.
         O(n) time and O(1) space
         Reducing time complexity would require maintaining an additinal data structure.
         '''
-        current = self.head
-        counter = 0
+        current: Optional[Node[T]] = self.head
+        counter: int = 0
 
         if not current:
             return counter
@@ -168,15 +173,15 @@ class DoublyLinkedList:
         return counter
 
 
-    def positions_of(self, target: Any) -> list[int]:
+    def positions_of(self, target: T) -> list[int]:
         ''' 
         Returns list of indices where target is found in the list.
         O(n) time and O(1) space
         Time complexity cannot be reduced without a way to randomly access nodes.
         '''
-        current = self.head
-        counter = 0
-        indices = []
+        current: Optional[Node[T]] = self.head
+        counter: int = 0
+        indices: list[int] = []
 
         if not current:
             return indices
@@ -190,7 +195,7 @@ class DoublyLinkedList:
         return indices
 
 
-    def to_list(self) -> list[Any]:
+    def to_list(self) -> list[T]:
         '''
         Returns a List of the LinkedList Node values.
         O(n) time and O(n) space
@@ -206,7 +211,7 @@ class DoublyLinkedList:
 
 
 if __name__ == "__main__":
-    dll = DoublyLinkedList()
+    dll: DoublyLinkedList[int] = DoublyLinkedList()
     dll.append(1)
     dll.append(2)
     print(dll)
