@@ -62,6 +62,7 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │   │   └── py.typed
 │   └── py.typed
 ├── README.md
-└── mypy.ini
+├── mypy.ini
+└── pyrightconfig.json
 ```
 <!-- TREE_END -->
