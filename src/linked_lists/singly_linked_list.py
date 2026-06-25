@@ -216,3 +216,5 @@ if __name__ == "__main__":
     print(repr(sll))
     print(len(sll))
     print(sll.to_list())
+    t = something
+    
