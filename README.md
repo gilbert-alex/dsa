@@ -46,7 +46,7 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │   ├── sorting/
 │   │   ├── tests/
 │   │   │   └── test_insertion_sort.py
-│   │   └── insertion.py
+│   │   └── sorts.py
 │   ├── stacks_and_queues/
 │   │   ├── tests/
 │   │   │   ├── test_linked_list_queue.py
