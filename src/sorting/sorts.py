@@ -52,8 +52,23 @@ class Sorts():
         return array
 
 
+    def bubble_sort(self, array: list[int]) -> list[int]:
+        self._swap_count = 0
+
+        length = len(array)
+        
+        for i in range(length):
+            for j in range(length-1, i, -1):
+                if self._right_greater_than(array[j], array[j-1]):
+                    self._swap(array, j, j-1)
+        return array 
+
+
 if __name__ == '__main__':
     l = [3, 2, 1]
-    print(f'original: {l}')
+    m = [1, 2, 3]
+
     s = Sorts()
-    print(f'sorted: {s.insertion_sort(l)}')
+    #s.insertion_sort(l)
+    print(s.bubble_sort(m))
+    print(s.bubble_sort(l))
