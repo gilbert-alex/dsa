@@ -1,6 +1,7 @@
 class Sorts():
     def __init__(self):
         self._swap_count = 0
+        self._compare_count = 0
 
 
     def _swap(self, array: list[int], left: int, right: int):
@@ -11,8 +12,11 @@ class Sorts():
         return array
 
 
-    def _right_greater_than(self, left: int, right: int):
-        return True if right > left else False
+    def _compare(self, target: int, compare: int):
+        ''' Returns True if arg1 < arg 2.
+        '''
+        self._compare_count += 1
+        return True if target < compare else False
 
 
     def insertion_sort(self, array: list[int]) -> list[int]:
@@ -36,6 +40,7 @@ class Sorts():
         '''
 
         self._swap_count = 0
+        self._compare_count = 0
 
         for i in range(len(array)):
             if i == 0:
@@ -53,13 +58,21 @@ class Sorts():
 
 
     def bubble_sort(self, array: list[int]) -> list[int]:
+        ''' Moves the lowest integer in an unsorted portion of an array to
+        left most position of that subarray.
+
+        Notes:
+            - may be able to limit the outer loop by one such that the last
+              pass is skipped as the array should be in order at that point.
+        '''
         self._swap_count = 0
+        self._compare_count = 0
 
         length = len(array)
         
         for i in range(length):
             for j in range(length-1, i, -1):
-                if self._right_greater_than(array[j], array[j-1]):
+                if self._compare(array[j], array[j-1]):
                     self._swap(array, j, j-1)
         return array 
 
@@ -69,6 +82,5 @@ if __name__ == '__main__':
     m = [1, 2, 3]
 
     s = Sorts()
-    #s.insertion_sort(l)
-    print(s.bubble_sort(m))
+    #s.insertion_sort(l) print(s.bubble_sort(m))
     print(s.bubble_sort(l))

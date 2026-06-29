@@ -4,32 +4,37 @@ from ..sorts import  Sorts
 
 @pytest.fixture
 def sample_array():
-    a = [42, 20, 17, 13, 28, 14, 23, 15]
-    return a
+    return [42, 20, 17, 13, 28, 14, 23, 15]
     
 
 @pytest.fixture
 def sorted_ascending_array():
-    a = [1, 2, 3, 4, 5]
-    return a
+    return [1, 2, 3, 4, 5]
 
 
 @pytest.fixture
 def sorted_descending_array():
-    a = [5, 4, 3, 2, 1]
-    return a
+    return [5, 4, 3, 2, 1]
 
 
 @pytest.fixture
 def duplicates_array():
-    a = [1, 5, 4, 4, 3, 2, 3]
-    return a
+    return [1, 5, 4, 4, 3, 2, 3]
 
 
 @pytest.fixture
 def negatives_array():
-    a = [-1, 2, 0, -1, -2]
-    return a
+    return [1, 2, 0, -2, -1]
+
+
+@pytest.fixture
+def scattered_array():
+    return [10, 20, 15, 30, 25]
+
+
+@pytest.fixture
+def more_scattered_array():
+    return [8, 3, 7, 1, 5, 2, 6, 4]
 
 
 class TestSwap():
@@ -77,17 +82,21 @@ class TestInsertionSort():
         assert all(l <= r for l, r in zip(result, result[1:]))
 
 
-    @pytest.mark.parametrize('unordered, ordered', [
-    ([42, 20, 17, 13, 28, 14, 23, 15], [13, 14, 15, 17, 20, 23, 28, 42]),
-    ([1, 2, 3, 4, 5], [1, 2, 3, 4, 5]),
-    ([5, 4, 3, 2, 1], [1, 2, 3, 4, 5]),
-    ([1, 4, 3, 3], [1, 3, 3, 4]),
-    ([2, 1, 0, -1, -2], [-2, -1, 0, 1, 2]),
+    @pytest.mark.parametrize('unsorted_fixture, expected', [
+        ('sample_array', 18),
+        ('sorted_ascending_array', 0),
+        ('sorted_descending_array', 10),
+        ('duplicates_array', 12),
+        ('negatives_array', 8),
+        ('scattered_array', 2),
+        ('more_scattered_array', 17),
     ])
-    def test_sorts_various(self, unordered, ordered):
+    def test_swap_count(self, unsorted_fixture, request, expected):
+        array = request.getfixturevalue(unsorted_fixture)
         s = Sorts()
-        assert s.insertion_sort(unordered) == ordered
-        
+        s.insertion_sort(array)
+        assert s._swap_count == expected
+
 
 class TestBubbleSort():
     def test_empty_array_returns_empty(self):
@@ -114,3 +123,19 @@ class TestBubbleSort():
         s = Sorts()
         result = s.bubble_sort(array)
         assert all(l <= r for l, r in zip(result, result[1:]))
+
+
+    @pytest.mark.parametrize('unsorted_fixture, expected', [
+        ('sample_array', 18),
+        ('sorted_ascending_array', 0),
+        ('sorted_descending_array', 10),
+        ('duplicates_array', 12),
+        ('negatives_array', 8),
+        ('scattered_array', 2),
+        ('more_scattered_array', 17),
+    ])
+    def test_swap_count(self, unsorted_fixture, request, expected):
+        array = request.getfixturevalue(unsorted_fixture)
+        s = Sorts()
+        s.bubble_sort(array)
+        assert s._swap_count == expected
