@@ -3,13 +3,13 @@ import statistics
 
 
 import pytest
-from ..sorts import  Sorts
+from ..quadratic_sorts import  Sorts
 
 
 @pytest.fixture
 def sample_array():
     return [42, 20, 17, 13, 28, 14, 23, 15]
-    
+
 
 @pytest.fixture
 def sorted_ascending_array():
