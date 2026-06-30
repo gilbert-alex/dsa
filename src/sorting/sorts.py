@@ -49,7 +49,7 @@ class Sorts():
             current: int = i
             previous: int = i - 1
 
-            while current > 0 and array[current] < array[previous]:
+            while current > 0 and self._compare(array[current], array[previous]):
                 self._swap(array, current, previous)
                 current -= 1
                 previous -= 1
@@ -69,7 +69,6 @@ class Sorts():
         self._compare_count = 0
 
         length = len(array)
-        
         for i in range(length):
             for j in range(length-1, i, -1):
                 if self._compare(array[j], array[j-1]):

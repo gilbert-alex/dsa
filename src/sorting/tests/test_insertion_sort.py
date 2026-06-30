@@ -1,3 +1,7 @@
+import random
+import statistics 
+
+
 import pytest
 from ..sorts import  Sorts
 
@@ -98,6 +102,57 @@ class TestInsertionSort():
         assert s._swap_count == expected
 
 
+    @pytest.mark.parametrize('size', [10, 50, 100])
+    def test_average_case_compares(self, size):
+        ''' Compares Average Case: (n(n-1)/4)+n 
+            - n: outer loop
+            - n-1: inner loop except 0-th index
+            - /4: 0-th to (i-1)-th indicies are sorted and an element only
+              moves left to it's sorted position. /2 is worst case but 
+              /4 on average. 
+            - +n: one additional while loop conditional call per outer loop
+            - 15% expected count allowed
+        '''
+        s = Sorts()
+        compares_list: list[int] = []
+
+        for _ in range(100):
+            array: list[int] = list(range(size))
+            random.shuffle(array)
+            s.insertion_sort(array)
+            compares_list.append(s._compare_count)
+
+        avg_compares = statistics.mean(compares_list)
+        exp_compares = (size*(size-1)/4)+size
+        print(f'size: {size}; avg: {avg_compares}; exp: {exp_compares}')
+        assert abs(avg_compares - exp_compares) < exp_compares * 0.15
+
+
+    @pytest.mark.parametrize('size', [10, 50, 100])
+    def test_average_case_swaps(self, size):
+        ''' Swaps Average Case: n(n-1)/4 
+            - n: outer loop
+            - n-1: inner loop except 0-th index
+            - /4: 0-th to (i-1)-th indicies are sorted and an element only
+              moves left to it's sorted position. /2 is worst case but 
+              /4 on average. 
+            - 15% expected count allowed
+        '''
+        s = Sorts()
+        swaps_list: list[int] = []
+
+        for _ in range(100):
+            array: list[int] = list(range(size))
+            random.shuffle(array)
+            s.insertion_sort(array)
+            swaps_list.append(s._swap_count)
+
+        avg_swaps = statistics.mean(swaps_list)
+        exp_swaps = size*(size-1)/4
+        print(f'size: {size}; avg: {avg_swaps}; exp: {exp_swaps}')
+        assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.15
+
+
 class TestBubbleSort():
     def test_empty_array_returns_empty(self):
         s = Sorts()
@@ -139,3 +194,55 @@ class TestBubbleSort():
         s = Sorts()
         s.bubble_sort(array)
         assert s._swap_count == expected
+
+
+    @pytest.mark.parametrize('size', [10, 50, 100])
+    def test_average_case_compares(self, size):
+        ''' Compares Average Case: n(n-1)/2 
+            - n: outer loop
+            - n-1: inner loop except last index which will be the max
+              value by default.
+            - /2: as the outer loop iterates the sorted subarray limits
+              the max distance necessary to move a value.
+            - The count of compares is known because all options are 
+              compared in every loop iteration.
+        '''
+        s = Sorts()
+        compares_list: list[int] = []
+
+        for _ in range(100):
+            array: list[int] = list(range(size))
+            random.shuffle(array)
+            s.bubble_sort(array)
+            compares_list.append(s._compare_count)
+
+        avg_compares = statistics.mean(compares_list)
+        exp_compares = size*(size-1)/2
+        print(f'size: {size}; avg: {avg_compares}; exp: {exp_compares}')
+        assert avg_compares == exp_compares
+
+
+    @pytest.mark.parametrize('size', [10, 50, 100])
+    def test_average_case_swaps(self, size):
+        ''' Swaps Average Case: n(n-1)/4 
+            - n: outer loop
+            - n-1: inner loop except last index which will be the max
+              value by default.
+            - /4: as the outer loop iterates the sorted subarray limits
+              the max distance necessary to move a value. Worst case is 
+              /2 but average is /4.
+            - 15% expected count allowed
+        '''
+        s = Sorts()
+        swaps_list: list[int] = []
+
+        for _ in range(100):
+            array: list[int] = list(range(size))
+            random.shuffle(array)
+            s.bubble_sort(array)
+            swaps_list.append(s._swap_count)
+
+        avg_swaps = statistics.mean(swaps_list)
+        exp_swaps = size*(size-1)/4
+        print(f'size: {size}; avg: {avg_swaps}; exp: {exp_swaps}')
+        assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.15
