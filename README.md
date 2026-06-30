@@ -47,7 +47,7 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │   │   │   └── test_quadratic_sorts.py
 │   │   ├── README.md
 │   │   └── quadratic_sorts.py
-│   ├── stacks_and_queues/
+│   ├── stacks_queues/
 │   │   ├── tests/
 │   │   │   ├── test_linked_list_queue.py
 │   │   │   ├── test_linked_list_stack.py
