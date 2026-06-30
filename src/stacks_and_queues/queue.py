@@ -1,5 +1,3 @@
-# List and Linked List backed Queues are both included in this module for comparison
-
 from typing import TypeVar, Generic, Optional
 
 from linked_lists.singly_linked_list import SinglyLinkedList
@@ -15,7 +13,7 @@ class ListQueue(Generic[T]):
 
     Python's list.append operates at O(1) time, this queue inherits the same
     and runs in O(1) time for insertion operations. Deletion requires O(n)
-    time to shift left each list element. 
+    time to shift left the index of each list element. 
 
     This implementation chooses O(1) enqueue and O(n) dequeue. 
     The alternative — inserting at index 0 — would invert these costs.

@@ -1,5 +1,3 @@
-# List and Linked List backed Stacks are both included in this module for comparison
-
 from typing import Any
 
 from linked_lists.singly_linked_list import SinglyLinkedList
@@ -10,12 +8,12 @@ class ListStack:
     A LIFO stack implemented on a Python list. This structure operates on 
     the n-th index of the list where n is the length - 1. 
     
+    By operating on the n-th index side, the Python's list.append and 
+    list.pop both operates at O(1) time, this stack inherits the same and 
+    runs in O(1) time for both insertion and deletion operations.
+
     The __str__ method reverses the native ordering of the Python list to 
     show a more intuitive string representation of a stack.
-    
-    Python's list.append and list.pop both operates at O(1) time, this stack
-    inherits the same and runs in O(1) time for both insertion and
-    deletion operations.
     '''
 
     def __init__(self) -> None:

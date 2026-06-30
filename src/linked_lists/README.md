@@ -1,9 +1,9 @@
 # Linked Lists
 
-| File | Structure |
-|---|---|
-| `singly_linked_list.py` | `SinglyLinkedList` - head + tail pointers, forward traversal only |
-| `doubly_linked_list.py` | `DoublyLinkedList` - head + tail pointers, bi-directional traversal |
+| File | Structure | Notes |
+|:--|:--|:--|
+| `singly_linked_list.py` | `SinglyLinkedList` | head & tail pointers, forward traversal only |
+| `doubly_linked_list.py` | `DoublyLinkedList` | head & tail pointers, bi-directional traversal |
 
 ---
 
@@ -31,7 +31,7 @@ Lists/Arrays (but I dont know for sure and will find out more in this DSA projec
 ### SinglyLinkedList
 
 | Method | Time | Space | Notes |
-|---|---|---|---|
+|:--|:-:|:-:|:--|
 | `prepend(value)` | O(1) | O(1) | Insert at head using head pointer |
 | `append_slow(value)` | O(n) | O(1) | Insert at tail by traversal - tail pointer maintained but not used |
 | `append_fast(value)` | O(1) | O(1) | Insert at tail using tail pointer |
@@ -46,7 +46,7 @@ Lists/Arrays (but I dont know for sure and will find out more in this DSA projec
 ### DoublyLinkedList
 
 | Method | Time | Space | Notes |
-|---|---|---|---|
+|:--|:-:|:-:|:--|
 | `prepend(value)` | O(1) | O(1) | Insert at head; sets `next` and `previous` pointers |
 | `append(value)` | O(1) | O(1) | Insert at tail; sets `next` and `previous` pointers |
 | `delete_first(value, from_end=False)` | O(n) | O(1) | Deletes first occurrence from head or tail; raises `ValueError` if not found |

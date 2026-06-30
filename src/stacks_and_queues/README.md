@@ -1,21 +1,19 @@
 # Stacks & Queues
 
-| File | Structure |
-|---|---|
-| `queue.py` | `ListQueue` - |
-| `queue.py` | `LinkedListQueue` - |
-| `stack.py` | `ListStack` - |
-| `stack.py` | `LinkedListStack` - |
+| File | Structure | Note |
+|:--|:--|:--|
+| `queue.py` | `ListQueue` | Implemented with a Python List |
+| `queue.py` | `LinkedListQueue` | Implemented with a Linked List |
+| `stack.py` | `ListStack` | Implemented with a Python List |
+| `stack.py` | `LinkedListStack` | Implemented with a Linked List |
 
 ---
 
 ## Description
 
-Stacks and Queues are collections of items stored and/or accessed in an routine,
-but different, order. Stacks are accessed 'Last In First Out' (LIFO) and 
-Queues are accessed 'First in First Out' (FIFO). Generally, both structures
-are linear in nature and are suitable for Python's List or, more generally,
-a Linked List data structure.
+Stacks and Queues are linear collections of items stored and/or accessed 
+in an routine, but different, order. Stacks are accessed 
+'Last In First Out' (LIFO) and Queues are accessed 'First in First Out' (FIFO). 
 
 Time complexity considerations are most important at insertion and deletion
 operations. An efficient structure is capable of performing both operations
@@ -32,23 +30,26 @@ effect on insertion/deletion time complexity.
 
 ### Stack
 
-| Method | Time | Space | Notes |
-|---|---|---|---|
-| `push(item)` | O(1) | O(1) | |
-| `pop()` | O(1) | O(1) | |
-| `peek()` | O(1) | O(1) | |
-| `is_empty()` | O(1) | O(1) | |
+| Method | Time | Space | Time | Space |
+|:--|:-:|:-:|:-:|:-:|
+| | **List** | | | **Linked List** | |
+| `push(item)` | O(1) | O(1) | O(1) | O(1) |
+| `pop()` | O(1) | O(1) | O(1)<sup>(a)</sup> | O(1) |
+| `peek()` | O(1) | O(1) | O(1) | O(1) |
+| `is_empty()` | O(1) | O(1) | O(1) | O(1) |
 
 ### Queue
 
 | Method | Time | Space | Notes |
-|---|---|---|---|
-| `enqueue(item)` | O(1) | O(1) | |
-| `dequeue()` | O(n)* | O(1) | |
-| `peek()` | O(1) | O(1) | |
-| `is_empty()` | O(1) | O(1) | |
+|:--|:-:|:-:|:--|
+| | **List** | | | **Linked List** | |
+| `enqueue(item)` | O(1) | O(1) |
+| `dequeue()` | O(n)<sup>(b)</sup> | O(1) | O(1)<sup>(b)</sup> | O(1) |
+| `peek()` | O(1) | O(1) |
+| `is_empty()` | O(1) | O(1) |
 
-\* Time complexity improved to O(1) by use of a linked list backed structure.
+<sup>a</sup> Although sll.delete() has O(n) worst case, this implementation operates in O(1). (see Issue #4)
+<sup>(b)</sup> Time complexity improved to O(1) by use of a linked list backed structure removing the need to reindex an entire list upon Node removal.
 
 ---
 
@@ -92,4 +93,4 @@ there are no invariants to consider discretly from the underlying implementation
 
 ## TODOs and Questions
 - Implement LinkedListStack.delete_head() and LinkedListQueue.delete_head() as
-  helper for LinkedListStack.pop() and LinkedListQueue.dequeue(), respectively.
+  helper for LinkedListStack.pop() and LinkedListQueue.dequeue(), respectively. (Issue #4)
