@@ -24,7 +24,7 @@ jobs:
 
       - name: Generate tree
         run: |
-          tree -I '.git|dsa.egg-info|pyproject.toml|requirements.txt|__init__.py|dist|build|__pycache__|.venv|tree_output.txt' -F --dirsfirst --noreport > tree_output.txt
+          tree -I 'py.typed|.git|dsa.egg-info|pyproject.toml|requirements.txt|__init__.py|dist|build|__pycache__|.venv|tree_output.txt' -F --dirsfirst --noreport > tree_output.txt
 
       - name: Update README
         run: |
