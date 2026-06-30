@@ -1,5 +1,5 @@
 from typing import TypeVar, Generic, Optional
-from stacks_and_queues.queue import LinkedListQueue as Queue
+from stacks_queues.queue import LinkedListQueue as Queue
 
 
 T = TypeVar('T')
