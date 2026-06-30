@@ -32,7 +32,7 @@ effect on insertion/deletion time complexity.
 
 | Method | Time | Space | Time | Space |
 |:--|:-:|:-:|:-:|:-:|
-| | **List** | | | **Linked List** | |
+| | **List** | | **Linked List** | |
 | `push(item)` | O(1) | O(1) | O(1) | O(1) |
 | `pop()` | O(1) | O(1) | O(1)<sup>(a)</sup> | O(1) |
 | `peek()` | O(1) | O(1) | O(1) | O(1) |
@@ -42,13 +42,14 @@ effect on insertion/deletion time complexity.
 
 | Method | Time | Space | Notes |
 |:--|:-:|:-:|:--|
-| | **List** | | | **Linked List** | |
-| `enqueue(item)` | O(1) | O(1) |
+| | **List** | | **Linked List** | |
+| `enqueue(item)` | O(1) | O(1) | O(1) | O(1) |
 | `dequeue()` | O(n)<sup>(b)</sup> | O(1) | O(1)<sup>(b)</sup> | O(1) |
-| `peek()` | O(1) | O(1) |
-| `is_empty()` | O(1) | O(1) |
+| `peek()` | O(1) | O(1) | O(1) | O(1) |
+| `is_empty()` | O(1) | O(1) | O(1) | O(1) |
 
 <sup>a</sup> Although sll.delete() has O(n) worst case, this implementation operates in O(1). (see Issue #4)
+<br>
 <sup>(b)</sup> Time complexity improved to O(1) by use of a linked list backed structure removing the need to reindex an entire list upon Node removal.
 
 ---
