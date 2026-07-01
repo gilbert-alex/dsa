@@ -33,24 +33,24 @@ effect on insertion/deletion time complexity.
 | Method | Time | Space | Time | Space |
 |:--|:-:|:-:|:-:|:-:|
 | | **List** | | **Linked List** | |
-| `push(item)` | O(1) | O(1) | O(1) | O(1) |
-| `pop()` | O(1) | O(1) | O(1)<sup>(a)</sup> | O(1) |
-| `peek()` | O(1) | O(1) | O(1) | O(1) |
-| `is_empty()` | O(1) | O(1) | O(1) | O(1) |
+| `push(item)` | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
+| `pop()` | $O(1)$ | $O(1)$ | $O(1)$<sup>(a)</sup> | $O(1)$ |
+| `peek()` | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
+| `is_empty()` | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
 
 ### Queue
 
 | Method | Time | Space | Time | Space |
 |:--|:-:|:-:|:-:|:-:|
 | | **List** | | **Linked List** | |
-| `enqueue(item)` | O(1) | O(1) | O(1) | O(1) |
-| `dequeue()` | O(n)<sup>(b)</sup> | O(1) | O(1)<sup>(b)</sup> | O(1) |
-| `peek()` | O(1) | O(1) | O(1) | O(1) |
-| `is_empty()` | O(1) | O(1) | O(1) | O(1) |
+| `enqueue(item)` | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
+| `dequeue()` | $O(n)$<sup>(b)</sup> | $O(1)$ | $O(1)$<sup>(b)</sup> | $O(1)$ |
+| `peek()` | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
+| `is_empty()` | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
 
-<sup>a</sup> Although sll.delete() has O(n) worst case, this implementation operates in O(1). (see Issue #4)
+<sup>a</sup> Although sll.delete() has $O(n)$ worst case, this implementation operates in $O(1)$. (see Issue #4)
 <br>
-<sup>b</sup> Time complexity improved to O(1) by use of a linked list backed structure removing the need to reindex an entire list upon Node removal.
+<sup>b</sup> Time complexity improved to $O(1)$ by use of a linked list backed structure removing the need to reindex an entire list upon Node removal.
 
 ---
 
@@ -73,13 +73,13 @@ the string representations must be reversed to fit my mental model discussed
 above.
 
 **Trade-offs in List-backed Queue**<br>
-New items are appended to the right of the list at O(1). Removal from the left 
-requires O(n) as each remaining element must be reindexed. Alternatively, 
+New items are appended to the right of the list at $O(1)$. Removal from the left 
+requires $O(n)$ as each remaining element must be reindexed. Alternatively, 
 inserting at index 0 would invert these costs.
 
 **Queue optimization with Linked-list backed structure**<br>
 Reimplementing the Queue with a linked list improves deletion complexity to
-O(1) because we can access the head directly and efficiently update pointers
+$O(1)$ because we can access the head directly and efficiently update pointers
 to the next item. Reindexing all items is not necessary as in the List-backed
 Queue.
 

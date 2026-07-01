@@ -32,38 +32,38 @@ Lists/Arrays (but I dont know for sure and will find out more in this DSA projec
 
 | Method | Time | Space | Notes |
 |:--|:-:|:-:|:--|
-| `prepend(value)` | O(1) | O(1) | Insert at head using head pointer |
-| `append_slow(value)` | O(n) | O(1) | Insert at tail by traversal - tail pointer maintained but not used |
-| `append_fast(value)` | O(1) | O(1) | Insert at tail using tail pointer |
-| `delete(value)` | O(n) | O(1) | Deletes first occurrence; raises `ValueError` if not found |
-| `count(target)` | O(n) | O(1) | Returns number of occurrences of target |
-| `positions_of(target)` | O(n) | O(n) | Returns list of indicies where target is found |
-| `to_list()` | O(n) | O(n) | Returns node values as a Python list |
-| `__len__()` | O(1) | O(1) | Returns `self.length` |
-| `__repr__()` | O(n) | O(n) | Debug string showing internal state and traversal |
-| `__str__()` | O(n) | O(n) | Human-readable traversal string |
+| `prepend(value)` | $O(1)$ | $O(1)$ | Insert at head using head pointer |
+| `append_slow(value)` | $O(n)$ | $O(1)$ | Insert at tail by traversal - tail pointer maintained but not used |
+| `append_fast(value)` | $O(1)$ | $O(1)$ | Insert at tail using tail pointer |
+| `delete(value)` | $O(n)$ | $O(1)$ | Deletes first occurrence; raises `ValueError` if not found |
+| `count(target)` | $O(n)$ | $O(1)$ | Returns number of occurrences of target |
+| `positions_of(target)` | $O(n)$ | $O(n)$ | Returns list of indicies where target is found |
+| `to_list()` | $O(n)$ | $O(n)$ | Returns node values as a Python list |
+| `__len__()` | $O(1)$ | $O(1)$ | Returns `self.length` |
+| `__repr__()` | $O(n)$ | $O(n)$ | Debug string showing internal state and traversal |
+| `__str__()` | $O(n)$ | $O(n)$ | Human-readable traversal string |
 
 ### DoublyLinkedList
 
 | Method | Time | Space | Notes |
 |:--|:-:|:-:|:--|
-| `prepend(value)` | O(1) | O(1) | Insert at head; sets `next` and `previous` pointers |
-| `append(value)` | O(1) | O(1) | Insert at tail; sets `next` and `previous` pointers |
-| `delete_first(value, from_end=False)` | O(n) | O(1) | Deletes first occurrence from head or tail; raises `ValueError` if not found |
-| `delete_all(value)` | O(n) | O(1) | Deletes all occurrences; raises `ValueError` if none found |
-| `count(target)` | O(n) | O(1) | Returns number of occurrences of target |
-| `positions_of(target)` | O(n) | O(n) | Returns list of indices where target is found |
-| `to_list()` | O(n) | O(n) | Returns node values as a Python list |
-| `__len__()` | O(1) | O(1) | Returns `self.length` |
-| `__repr__()` | O(n) | O(n) | Debug strings showing internal state and traversal |
-| `__str__()` | O(n) | O(n) | Human-readable traversal string |
+| `prepend(value)` | $O(1)$ | $O(1)$ | Insert at head; sets `next` and `previous` pointers |
+| `append(value)` | $O(1)$ | $O(1)$ | Insert at tail; sets `next` and `previous` pointers |
+| `delete_first(value, from_end=False)` | $O(n)$ | $O(1)$ | Deletes first occurrence from head or tail; raises `ValueError` if not found |
+| `delete_all(value)` | $O(n)$ | $O(1)$ | Deletes all occurrences; raises `ValueError` if none found |
+| `count(target)` | $O(n)$ | $O(1)$ | Returns number of occurrences of target |
+| `positions_of(target)` | $O(n)$ | $O(n)$ | Returns list of indices where target is found |
+| `to_list()` | $O(n)$ | $O(n)$ | Returns node values as a Python list |
+| `__len__()` | $O(1)$ | $O(1)$ | Returns `self.length` |
+| `__repr__()` | $O(n)$ | $O(n)$ | Debug strings showing internal state and traversal |
+| `__str__()` | $O(n)$ | $O(n)$ | Human-readable traversal string |
 
 ---
 
 ## Implementation Notes
 
 **Head and tail pointers are maintained on both structures.**<br>
-This makes both `prepend` and `append` possible in O(1) time. The `append_slow` 
+This makes both `prepend` and `append` possible in $O(1)$ time. The `append_slow` 
 method on `SinglyLinkedList` is maintained to illustrate the benefit of a 
 tail pointer.
 
