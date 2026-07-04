@@ -14,7 +14,8 @@ The invariants listed for each algorithm below must be true at each of three dif
 
 Typically, sorting algorithms are used to modify the order of records. Records are made up of two parts; a key, and satellite data. These algorithms operate on the keys which, in this repo, i've chosen to simplify to a simple list of integers. 
 
-After an algorithm has been tested to it's theoretical benchmarks I'll modify the API to sort not only a list of integers but a list of records by an arbitary key field. For example, the Insertion Sort API is modified to include an anomious function to accessing a named dictionary field. If written literally, the keys would resolve to `array[index][named_field]` if accessing a string literal list of dictionaries. 
+After an algorithm has been tested to it's theoretical benchmarks I'll modify the API to sort not only a list of integers but a list of records by an arbitary key field. For example, the Insertion Sort API is modified to include an anomious function to accessing a named dictionary field. If written literally, the keys would resolve to `array[index][named_field]` if accessing a string literal list of dictionaries.
+[View the commit discussed above](../../../../commit/0d43d1f)
 
 ---
 
