@@ -19,7 +19,7 @@ class Sorts():
         return True if target < compare else False
 
 
-    def insertion_sort(self, array: list[int]) -> list[int]:
+    def insertion_sort(self, array: list[int], key = lambda x: x) -> list[int]:
         self._swap_count = 0
         self._compare_count = 0
 
@@ -27,7 +27,7 @@ class Sorts():
             current: int = i
             previous: int = i - 1
 
-            while current > 0 and self._compare(array[current], array[previous]):
+            while current > 0 and self._compare(key(array[current]), key(array[previous])):
                 self._swap(array, current, previous)
                 current -= 1
                 previous -= 1

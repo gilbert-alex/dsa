@@ -41,6 +41,14 @@ def more_scattered_array():
     return [8, 3, 7, 1, 5, 2, 6, 4]
 
 
+@pytest.fixture
+def list_of_dictionaries():
+    return [
+        {'name': 'baz', 'amount': 100},
+        {'name': 'foo', 'amount': 10},
+        {'name': 'bar', 'amount': 50},
+    ]
+
 class TestSwap():
     def test_swap_high_to_low_index(self):
         s = Sorts()
@@ -151,6 +159,19 @@ class TestInsertionSort():
         exp_swaps = size*(size-1)/4
         print(f'size: {size}; avg: {avg_swaps}; exp: {exp_swaps}')
         assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.15
+
+
+    def test_dictionary_sort(self, list_of_dictionaries):
+        expected = [
+            {'name': 'foo', 'amount': 10},
+            {'name': 'bar', 'amount': 50},
+            {'name': 'baz', 'amount': 100},
+        ]
+        s = Sorts()
+        assert s.insertion_sort(
+            list_of_dictionaries, 
+            key=lambda record: record['amount']
+        ) == expected
 
 
 class TestBubbleSort():
