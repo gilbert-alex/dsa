@@ -1,4 +1,5 @@
-from typing import Any
+from typing import Any, Optional
+from collections.abc import Iterator
 
 
 class Node():
@@ -10,12 +11,8 @@ class HashSet():
     ''' 
     A hash set implemented with linear probing to handle collisions.
 
-    Interanally maintains a Python list of Nodes.
+    Internally maintains a Python list of Nodes.
     Automatically resizes when the load factor exceeds CAPACITY.
-
-    Attributes:
-        DEFAULT_CAPACITY (int): Initial number of buckets.
-        MAX_LOAD (float): Threshold to trigger resize (len / capacity)
 
     Time complexity (average / worst):
         get: O(1) / O(n)
@@ -28,6 +25,7 @@ class HashSet():
 
     DEFAULT_CAPACITY = 8
     MAX_LOAD = .75
+    _TOMBSTONE = object()
     
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
@@ -37,23 +35,13 @@ class HashSet():
 
 
     def __str__(self) -> str:
-        load_factor = self._count / self._capacity
-
-        '''
-        header = (
-                f"capacity  : {self._capacity}\n"
-                f"count     : {self._count}\n"
-                f"load      : {load_factor:.2f}\n"
-                )
-        '''
-
         pairs = {
                 index: node.value
                 for index, node in enumerate(self._buckets)
-                if node is not None
+                if node is not None 
+                if node is not self._TOMBSTONE
                 }
 
-        #return header + str(pairs)
         return str(pairs)
 
 
@@ -70,15 +58,7 @@ class HashSet():
 
 
     def set(self, value: Any) -> None:
-        ''' Inserts a Node into the appropriate bucket. Also resizes the list of
-            buckets if the next insertion reaches, or exceedes, the MAX_Load.
-
-            The count instance variable is not owned here because multiple
-            functions call self._insert() which is a more natural owner.
-        
-            self._count + 1 is passed to self._is_resize_required() to consider
-            the current Node being set.
-        '''
+        # +1 count considers the current value being added
         if self._is_resize_required(self._count + 1, self._capacity):
             self._resize()
 
@@ -86,21 +66,20 @@ class HashSet():
 
 
     def get(self, target: Any) -> Any:
-        index = self._scan(target)
+        index = self._scan_for_target(target)
 
-        if index == -1 or index == -2:
+        if index is None:
             raise ValueError(f'{target} not found')
         else:
             return self._buckets[index].value
 
 
     def delete(self, target: Any) -> Any:
-        index = self._scan(target)
-
-        if index == -1 or index == -2:
+        index = self._scan_for_target(target)
+        if index is None:
             raise ValueError(f'{target} not found')
         else:
-            self._buckets[index] == None
+            self._buckets[index] = self._TOMBSTONE
             self._count -= 1
 
 
@@ -116,76 +95,56 @@ class HashSet():
         return buffer
 
 
-    def _next_empty_bucket(self, index: int) -> int:
+    def _probe(self, start: int) -> Iterator[int]:
+        ''' Generator function starting at start and wraps once.
         '''
-        Called on a collision to lineraly probe for the next empty bucket.
-        The ValueError here should never raise before resize is called.
-        '''
-        start = index
-        next = self._get_next_index(start)
-
-        while next != start:
-            if self._buckets[next]== None:
-                return next
-            next = self._get_next_index(next)
-
-        raise ValueError('All buckets are full')
-
-
-    #TODO:
-    #def _scan(self, start: int, target: Any | None = None) -> int:
-        ''' Linear search for target value from starting index.
-            Omit the target parameter to scan for the next empty bucket.
-        '''
-    def _scan(self, target: Any) -> int:
-        ''' This is temporary until I can fold _next_empty_bucket into scan.
-            
-            Linear search by index for target value and returns index.
-        '''
-        index = self._hash(str(target))
-        #result = self._buckets[index].value
-        bucket = self._buckets[index]
-        if not bucket:
-            return -1
-
-        result = bucket.value
-
-        if result == target:
-            return index
-        elif result is None:
-            return -1
-        else:
-            next = self._get_next_index(index)
-
-            while next != index:
-                if self._buckets[next].value == target:
-                    return next
-                next = self._get_next_index(next)
-
-        return -2
+        index: int = start
+        yield index
+        index = self._get_next_index(index)
+        while index != start:
+            yield index
+            index = self._get_next_index(index)
 
 
     def _get_next_index(self, index: int) -> int:
-        ''' Increment index with wrap from last to first index.
+        ''' Increment index with wrap.
         '''
         return (index + 1) % self._capacity
 
 
+    def _find_empty_bucket(self, start: int) -> int:
+        for index in self._probe(start):
+            bucket = self._buckets[index]
+            if bucket == None or bucket is self._TOMBSTONE:
+                return index
+
+        raise ValueError('All buckets are full')
+
+
+    def _scan_for_target(self, target: Any) -> Optional[int]:
+        start = self._hash(str(target))
+
+        for index in self._probe(start):
+            bucket = self._buckets[index]
+            if bucket is None:
+                return None
+            if bucket == self._TOMBSTONE:
+                continue
+            if bucket.value == target:
+                return index
+
+        return None
+
+
     def _insert(self, value: Any) -> None:
-        ''' Assigns a new Node to the hashed bucket unless there is a collision.
-            In the event of a collision, the next empty bucket will be selected.
-            Incrementing the count instance variable is owned here because the
-            resize helper calls this instead of set. I admit this is a break
-            from the single purpose principle.
-        '''
         node = Node(value)
         index = self._hash(str(value))
         existing_value = self._buckets[index]
 
-        if existing_value is None:
+        if existing_value is None or existing_value is self._TOMBSTONE:
             self._buckets[index] = node
         else:
-            self._buckets[self._next_empty_bucket(index)] = node
+            self._buckets[self._find_empty_bucket(index)] = node
 
         # Incrementing this variable here because _resize calls this function
         self._count += 1
@@ -197,9 +156,6 @@ class HashSet():
 
 
     def _resize(self) -> None:
-        ''' Doubles capacity and rehash.
-        '''
-        # change in place -- hopefully 
         old_buckets = self._buckets
         new_capacity = self._capacity * 2
         self._buckets = [None] * new_capacity
@@ -207,15 +163,9 @@ class HashSet():
         self._count = 0
 
         for b in old_buckets:
-            if b is not None:
+            if isinstance(b, Node):
                 self._insert(b.value)
 
 
 if __name__ == "__main__":
-    hs = HashSet()
-    hs.set(1)
-    hs.set(0)
-    hs.set(6)
-    print(hs)
-    print(repr(hs))
-    print(f'got value {hs.get(1)}')
+    pass

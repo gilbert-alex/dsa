@@ -1,4 +1,5 @@
 import pytest
+import random
 from ..hashset import Node, HashSet
 
 
@@ -139,22 +140,22 @@ class TestHash:
 
 class TestFindEmptyBucket:
     @pytest.mark.parametrize('strings, index, expected', [
-        ([], 0, 1),                         # expected [1] not [0]
+        ([], 0, 0),
         (range(0, 1), 0, 1),
         (range(0, 7), 0, 7),
         ([0, 1, 2, 3, None, 5, 6, 7], 0, 4),      # 5th index
         ([0, None, 2, 3, 4, 5, None, 7], 2, 6),         # search right
         ([None, 1, 2, 3, 4, 5, 6, 7], 1, 0),      # wraps
     ])
-    def test_next_empty_bucket(self, strings, index, expected):
+    def test_find_empty_bucket(self, strings, index, expected):
         hs = _make_hs(strings)
-        assert hs._next_empty_bucket(index) == expected
+        assert hs._find_empty_bucket(index) == expected
 
     
     def test_full_buckets_raise(self):
         hs = _make_hs(range(0, 8))
         with pytest.raises(ValueError):
-            hs._next_empty_bucket(0)
+            hs._find_empty_bucket(0)
 
 
 class TestScan:
@@ -163,13 +164,13 @@ class TestScan:
         (range(0, 8), 7, 7),          # return last index
         (range(0, 8), 2, 2),          # start in middle
     ])
-    def test_scan_expected_behavior(self, strings, target, expected):
+    def test_scan_for_target_expected_behavior(self, strings, target, expected):
         hs = _make_hs(strings)
-        assert hs._scan(target) == expected
+        assert hs._scan_for_target(target) == expected
 
 
     ''' The _make_hs function does not hash inputs. So, the ordering of the 
-        values here mimics the result of a collision. _scan will still initiate
+        values here mimics the result of a collision. _scan_for_target will still initiate
         it's search from the target's hashed index.
     '''
     @pytest.mark.parametrize('values, target, expected', [
@@ -177,20 +178,20 @@ class TestScan:
         ([0, 8, 1], 1, 2),
         ([0, 8, 2, 17], 17, 3),
     ])
-    def test_scan_with_colision(self, values, target, expected):
+    def test_scan_for_target_with_colision(self, values, target, expected):
         hs = _make_hs(values)
-        assert hs._scan(target) == expected
+        assert hs._scan_for_target(target) == expected
 
 
-    def test_scan_with_wrap(self):
+    def test_scan_for_target_with_wrap(self):
         values = [2, 3, 4, 5, 6, 7, 0, 1]
         hs = _make_hs(values)
-        assert hs._scan(2) == 0
+        assert hs._scan_for_target(2) == 0
 
     
-    def test_scan_not_found_code(self):
+    def test_scan_for_target_not_found_code(self):
         hs = _make_hs(range(0, 8))
-        assert hs._scan(8) == -2
+        assert hs._scan_for_target(8) == None
 
 
 class TestGetNextIndex:
@@ -278,4 +279,47 @@ class TestComponent:
             cruise_stops.get('Homer')
         cruise_stops.delete('Vancouver')
         print(cruise_stops)
-        len(cruise_stops) == 6
+        assert len(cruise_stops) == 6
+
+
+    def test_tombstone(self):
+        hs = HashSet()
+        hs.set(0)
+        index_0 = hs._scan_for_target(0)
+        hs.set(8)   # collision
+        hs.delete(0)
+        assert hs._buckets[index_0] == hs._TOMBSTONE
+        assert hs._scan_for_target(8) == index_0 + 1
+        hs.set(0)
+        assert hs._scan_for_target(0) == 0
+
+
+    def test_tombstone_reclaimed_through_resize(self):
+        hs = HashSet()
+        first_set = random.sample(range(-100, 100), 10)
+        for value in first_set:
+            hs.set(value)
+
+        assert hs._capacity == 16
+        assert len(hs) == 10
+        for value in first_set:
+            assert hs.get(value) == value
+
+        for value in first_set:
+            hs.delete(value)
+
+        assert hs._capacity == 16
+        assert len(hs) == 0
+        for value in first_set:
+            with pytest.raises(ValueError):
+                hs.get(value)
+
+        second_set = random.sample(range(-100, 100), 12)
+        for value in second_set:
+            hs.set(value)
+
+        assert hs._capacity == 32
+        assert len(hs) == 12
+        for value in second_set:
+            assert hs.get(value) == value
+
