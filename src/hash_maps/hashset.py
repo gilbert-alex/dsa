@@ -1,13 +1,24 @@
-from typing import Any, Optional
+from typing import Generic, Union, Optional, TypeVar
 from collections.abc import Iterator
 
 
-class Node():
-    def __init__(self, value):
-        self.value = value
+T = TypeVar('T')
 
 
-class HashSet():
+class Node(Generic[T]):
+    def __init__(self, value: T) -> None:
+        self.value: T = value
+
+
+class _TombstoneType:
+    pass
+
+
+TOMBSTONE = _TombstoneType()
+Bucket = Union[Node[T], None, _TombstoneType]
+
+
+class HashSet(Generic[T]):
     ''' 
     A hash set implemented with linear probing to handle collisions.
 
@@ -25,21 +36,20 @@ class HashSet():
 
     DEFAULT_CAPACITY = 8
     MAX_LOAD = .75
-    _TOMBSTONE = object()
+    _TOMBSTONE = TOMBSTONE
     
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
         self._capacity: int = capacity
         self._count: int = 0
-        self._buckets: list[Node | None] = [None] * self._capacity
+        self._buckets: list[Bucket[T]] = [None] * self._capacity
 
 
     def __str__(self) -> str:
         pairs = {
                 index: node.value
                 for index, node in enumerate(self._buckets)
-                if node is not None 
-                if node is not self._TOMBSTONE
+                if isinstance(node, Node)
                 }
 
         return str(pairs)
@@ -57,7 +67,7 @@ class HashSet():
         return self._count
 
 
-    def set(self, value: Any) -> None:
+    def set(self, value: T) -> None:
         # +1 count considers the current value being added
         if self._is_resize_required(self._count + 1, self._capacity):
             self._resize()
@@ -65,16 +75,18 @@ class HashSet():
         self._insert(value)
 
 
-    def get(self, target: Any) -> Any:
+    def get(self, target: T) -> T:
         index = self._scan_for_target(target)
 
         if index is None:
             raise ValueError(f'{target} not found')
         else:
-            return self._buckets[index].value
+            bucket = self._buckets[index]
+            assert isinstance(bucket, Node)
+            return bucket.value
 
 
-    def delete(self, target: Any) -> Any:
+    def delete(self, target: T) -> None:
         index = self._scan_for_target(target)
         if index is None:
             raise ValueError(f'{target} not found')
@@ -115,20 +127,20 @@ class HashSet():
     def _find_empty_bucket(self, start: int) -> int:
         for index in self._probe(start):
             bucket = self._buckets[index]
-            if bucket == None or bucket is self._TOMBSTONE:
+            if bucket is None or bucket is self._TOMBSTONE:
                 return index
 
         raise ValueError('All buckets are full')
 
 
-    def _scan_for_target(self, target: Any) -> Optional[int]:
+    def _scan_for_target(self, target: T) -> Optional[int]:
         start = self._hash(str(target))
 
         for index in self._probe(start):
             bucket = self._buckets[index]
             if bucket is None:
                 return None
-            if bucket == self._TOMBSTONE:
+            if not isinstance(bucket, Node):
                 continue
             if bucket.value == target:
                 return index
@@ -136,7 +148,7 @@ class HashSet():
         return None
 
 
-    def _insert(self, value: Any) -> None:
+    def _insert(self, value: T) -> None:
         node = Node(value)
         index = self._hash(str(value))
         existing_value = self._buckets[index]

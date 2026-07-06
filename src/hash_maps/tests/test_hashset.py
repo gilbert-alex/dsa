@@ -1,5 +1,6 @@
 import pytest
 import random
+from typing import Optional
 from ..hashset import Node, HashSet
 
 
@@ -24,7 +25,7 @@ def hs_127():
 
 
 def _make_hs(item_list):
-    hs = HashSet()
+    hs: HashSet = HashSet()
     hs._count = len(item_list)
     for index, value in enumerate(item_list):
         if value == None:
@@ -260,7 +261,7 @@ class TestMeasureLoadFactor:
 
 class TestComponent:
     def test_component(self):
-        cruise_stops = HashSet()
+        cruise_stops: HashSet = HashSet()
         assert cruise_stops._capacity == 8
         assert len(cruise_stops) == 0
         cruise_stops.set('Vancouver')
@@ -283,19 +284,20 @@ class TestComponent:
 
 
     def test_tombstone(self):
-        hs = HashSet()
+        hs: HashSet = HashSet()
         hs.set(0)
-        index_0 = hs._scan_for_target(0)
+        index: Optional[int] = hs._scan_for_target(0)
+        assert index is not None
         hs.set(8)   # collision
+        assert hs._scan_for_target(8) == index + 1
         hs.delete(0)
-        assert hs._buckets[index_0] == hs._TOMBSTONE
-        assert hs._scan_for_target(8) == index_0 + 1
+        assert hs._buckets[index] is hs._TOMBSTONE
         hs.set(0)
-        assert hs._scan_for_target(0) == 0
+        assert hs._scan_for_target(0) == index
 
 
     def test_tombstone_reclaimed_through_resize(self):
-        hs = HashSet()
+        hs: HashSet = HashSet()
         first_set = random.sample(range(-100, 100), 10)
         for value in first_set:
             hs.set(value)
