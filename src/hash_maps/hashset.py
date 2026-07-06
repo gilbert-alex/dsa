@@ -19,25 +19,10 @@ Bucket = Union[Node[T], None, _TombstoneType]
 
 
 class HashSet(Generic[T]):
-    ''' 
-    A hash set implemented with linear probing to handle collisions.
-
-    Internally maintains a Python list of Nodes.
-    Automatically resizes when the load factor exceeds CAPACITY.
-
-    Time complexity (average / worst):
-        get: O(1) / O(n)
-        set: O(1) amortized / O(n)
-        delete: O(1) / O(n)
-
-    Space complexity: 
-        O(n)
-    '''
-
     DEFAULT_CAPACITY = 8
     MAX_LOAD = .75
     _TOMBSTONE = TOMBSTONE
-    
+
 
     def __init__(self, capacity: int = DEFAULT_CAPACITY) -> None:
         self._capacity: int = capacity
@@ -88,6 +73,7 @@ class HashSet(Generic[T]):
 
     def delete(self, target: T) -> None:
         index = self._scan_for_target(target)
+
         if index is None:
             raise ValueError(f'{target} not found')
         else:
@@ -104,6 +90,7 @@ class HashSet(Generic[T]):
 
         for char in chars:
             buffer = (buffer + ord(char.lower())) % self._capacity
+
         return buffer
 
 

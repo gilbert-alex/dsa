@@ -1,7 +1,7 @@
 import pytest
 import random
 from typing import Optional
-from ..hashset import Node, HashSet
+from ..hashset import Node, HashSet, _TombstoneType
 
 
 @pytest.fixture
@@ -31,8 +31,7 @@ def _make_hs(item_list):
         if value == None:
             continue
         else:
-            n = Node(value)
-            hs._buckets[index] = n
+            hs._buckets[index] = Node(value)
     return hs
 
 
@@ -69,13 +68,23 @@ class TestGet:
 
 class TestDelete:
     @pytest.mark.parametrize('strings, target, expected', [
+        (range(3), 1, [0, None, 2, None, None, None, None, None]),
         (range(0, 8), 0, [None, 1, 2, 3, 4, 5, 6, 7]),
-        ([None, 1, 2, 3], 1, [None, None, 2, 3]),
+        ([None, 1, 2, 3], 1, [None, None, 2, 3, None, None, None, None]),
     ])
     def test_delete_removes_node(self, strings, target, expected):
         hs = _make_hs(strings)
         hs.delete(target)
-        hs._buckets == expected
+        expected[target] = hs._TOMBSTONE
+
+        result = [
+                hs._TOMBSTONE if bucket is hs._TOMBSTONE
+                else getattr(bucket, 'value', None)
+                for bucket in hs._buckets
+        ]
+
+        print(result)
+        assert result == expected
 
 
     def test_delete_decrements_length(self, default_hs):
@@ -139,6 +148,48 @@ class TestHash:
         assert hs_100._hash(strings) == expected
 
 
+class TestProbe:
+    def test_traverse_whole_set_from_zero(self):
+        hs: HashSet = HashSet()
+        gen = hs._probe(0)
+        for c in range(hs._capacity):
+            assert next(gen) == c
+
+
+    def test_end_of_iterator_raises(self):
+        hs: HashSet = HashSet()
+        gen = hs._probe(0)
+        for _ in range(hs._capacity):
+            next(gen)
+
+        with pytest.raises(StopIteration):
+            next(gen)
+
+
+    def test_traverse_wraps(self):
+        hs: HashSet = HashSet()
+        last_index = hs._capacity
+        gen = hs._probe(last_index)
+        next(gen)   # needed for the current iteration
+        assert next(gen) == 1
+
+
+class TestGetNextIndex:
+    @pytest.mark.parametrize('index, expected', [
+        (0, 1),
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 5),
+        (5, 6),
+        (6, 7),
+        (7, 0),
+    ])
+    def test_get_next_bucket(self, index, expected):
+        hs = _make_hs(range(4))
+        assert hs._get_next_index(index) == expected
+
+
 class TestFindEmptyBucket:
     @pytest.mark.parametrize('strings, index, expected', [
         ([], 0, 0),
@@ -159,7 +210,7 @@ class TestFindEmptyBucket:
             hs._find_empty_bucket(0)
 
 
-class TestScan:
+class TestScanForTarget:
     @pytest.mark.parametrize('strings, target, expected', [
         (range(0, 8), 0, 0),          # return first index
         (range(0, 8), 7, 7),          # return last index
@@ -193,22 +244,6 @@ class TestScan:
     def test_scan_for_target_not_found_code(self):
         hs = _make_hs(range(0, 8))
         assert hs._scan_for_target(8) == None
-
-
-class TestGetNextIndex:
-    @pytest.mark.parametrize('index, expected', [
-        (0, 1),
-        (1, 2),
-        (2, 3),
-        (3, 4),
-        (4, 5),
-        (5, 6),
-        (6, 7),
-        (7, 0),
-    ])
-    def test_get_next_bucket(self, index, expected):
-        hs = _make_hs(range(4))
-        assert hs._get_next_index(index) == expected
 
 
 class TestInsert:
@@ -294,6 +329,15 @@ class TestComponent:
         assert hs._buckets[index] is hs._TOMBSTONE
         hs.set(0)
         assert hs._scan_for_target(0) == index
+        
+
+    def test_is_tombstone_a_singleton(self):
+        hs: HashSet = HashSet()
+        values = list(range(2))
+        for v in values:
+            hs.set(v)
+            hs.delete(v)
+        assert id(hs._buckets[values[0]]) == id(hs._buckets[values[1]])
 
 
     def test_tombstone_reclaimed_through_resize(self):
