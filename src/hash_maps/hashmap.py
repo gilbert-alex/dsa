@@ -1,7 +1,11 @@
-from typing import Any
+from typing import Any, Generic, TypeAlias, TypeVar
 
 
-class HashMap:
+T = TypeVar('T')
+BucketType: TypeAlias = list[tuple[str, T]]
+HashmapType: TypeAlias = list[BucketType] 
+
+class HashMap(Generic[T]):
 
     DEFAULT_CAPACITY = 8
     LOAD_THRESHOLD = 0.75
@@ -13,15 +17,15 @@ class HashMap:
         self._capacity: int = capacity
         self._load_threshold: float = load_threshold
         self._size: int = 0
-        self._buckets: list[Any | None] = [[] for _ in range(self._capacity)]
+        self._buckets: HashmapType = [[] for _ in range(self._capacity)]
 
 
     def _hash(self, value: str) -> int:
         ''' Intentionally simple for easier tests. 
             Include a prime multiplication factor to improve distribution.
         '''
-        buffer = 0
-        chars = list(value)
+        buffer: int = 0
+        chars: list[str] = list(value)
 
         for char in chars:
             buffer = (buffer + ord(char.lower())) % self._capacity
@@ -29,7 +33,7 @@ class HashMap:
 
 
     def _resize(self) -> None:
-        old_buckets = self._buckets
+        old_buckets: HashmapType = self._buckets
         self._size = 0
         self._capacity *= 2
         self._buckets = [[] for _ in range(self._capacity)]
@@ -39,11 +43,11 @@ class HashMap:
                 self.put(k, v)
 
 
-    def put(self, key: str, value: Any) -> None:
-        index = self._hash(key)
-        bucket = self._buckets[index]
+    def put(self, key: str, value: T) -> None:
+        index: int = self._hash(key)
+        bucket: BucketType = self._buckets[index]
 
-        for i, (k, v) in enumerate(bucket):
+        for i, (k, _) in enumerate(bucket):
             if k == key:
                 bucket[i] = (k, value)
                 return
@@ -55,9 +59,9 @@ class HashMap:
             self._resize()
 
 
-    def get(self, key: str, default: Any | None = None):
-        index = self._hash(key)
-        bucket = self._buckets[index]
+    def get(self, key: str, default: Any = None):
+        index: int = self._hash(key)
+        bucket: BucketType = self._buckets[index]
 
         for k, v in bucket:
             if k == key:
@@ -67,10 +71,10 @@ class HashMap:
 
 
     def remove(self, key: str) -> tuple | bool:
-        index = self._hash(key)
-        bucket = self._buckets[index]
+        index: int = self._hash(key)
+        bucket: BucketType = self._buckets[index]
 
-        for i, (k, v) in enumerate(bucket):
+        for i, (k, _) in enumerate(bucket):
             if k == key:
                 self._size -= 1
                 return bucket.pop(i)

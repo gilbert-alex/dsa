@@ -10,7 +10,7 @@ def default_hm():
 def _make_hm(item_list):
     ''' This purposefully avoides hashing the keys to make for easier test setup.
     '''
-    hm = HashMap()
+    hm: HashMap = HashMap()
     counter = 0
     for outer_index, inner_list in enumerate(item_list):
         for inner_index, item in enumerate(inner_list):
@@ -236,7 +236,7 @@ class TestContains:
 
 class TestComponent:
     def test_hash_map(self):
-        teams = HashMap()
+        teams: HashMap = HashMap()
         assert teams._capacity == 8
         assert len(teams) == 0
         teams.put('Mexico', 'Group A')
