@@ -136,11 +136,20 @@ class HashSet(Generic[T]):
 
 
     def _insert(self, value: T) -> None:
-        node = Node(value)
         index = self._hash(str(value))
-        existing_value = self._buckets[index]
+        target_bucket = self._buckets[index]
 
-        if existing_value is None or existing_value is self._TOMBSTONE:
+        # no duplicates allowed in set
+        if isinstance(target_bucket, Node) and target_bucket.value == value:
+            return
+
+        # other falsy values are allowed
+        if value is None:
+            raise ValueError('None is not allowed as a value')
+
+        node = Node(value)
+
+        if target_bucket is None or target_bucket is self._TOMBSTONE:
             self._buckets[index] = node
         else:
             self._buckets[self._find_empty_bucket(index)] = node

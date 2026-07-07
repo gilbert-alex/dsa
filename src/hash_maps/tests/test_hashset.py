@@ -260,9 +260,9 @@ class TestInsert:
 
 
     def test_insert_duplicate_values(self, default_hs):
-        for s in ['test'] * 2:
+        for s in ['foo'] * 2:
             default_hs._insert(s)
-        assert len(default_hs) == 2
+        assert len(default_hs) == 1
 
 
     @pytest.mark.parametrize('values', [
@@ -277,11 +277,17 @@ class TestInsert:
         (False),
         (True),
         (' '),
-        (None),
     ])
     def test_insert_datatypes(self, values, default_hs):
         default_hs._insert(values)
         assert len(default_hs) == 1
+
+
+    def test_insert_node_raises(self, default_hs):
+        with pytest.raises(ValueError) as exc_info:
+            default_hs.set(None)
+
+        assert str(exc_info.value) == 'None is not allowed as a value'
 
 
 class TestMeasureLoadFactor:
@@ -369,3 +375,11 @@ class TestComponent:
         for value in second_set:
             assert hs.get(value) == value
 
+
+    def test_uniqueness_of_values(self):
+        hs: HashSet = HashSet[str]()
+        hs.set('foo')
+        assert len(hs) == 1
+        hs.set('foo')
+        print(hs)
+        assert len(hs) == 1
