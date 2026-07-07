@@ -206,6 +206,20 @@ class TestGet:
         assert hm.get('h') == 2
 
 
+    @pytest.mark.parametrize('key, falsy_value', [
+        ('zero', 0),
+        ('float', 0.0),
+        ('bool', False),
+        ('none', None),
+        ('blank', ''),
+        ('list', []),
+    ])
+    def test_get_falsy_value(self, key, falsy_value):
+        hm: HashMap = HashMap()
+        hm.put(key, falsy_value)
+        assert hm.get(key) == falsy_value
+
+
 class TestRemove:
     def test_remove_returns_tuple(self, full_hm):
         hm = full_hm
@@ -232,6 +246,26 @@ class TestContains:
         hm = collision_hm
         assert hm.contains('0') == True
         assert hm.contains('h') == True
+
+
+    @pytest.mark.parametrize('key, falsy_value', [
+        ('zero', 0),
+        ('float', 0.0),
+        ('bool', False),
+        ('none', None),
+        ('blank', ''),
+        ('list', []),
+    ])
+    def test_key_returns_falsy_value(self, key, falsy_value):
+        ''' Contains() should really check if a key is included, not any
+            particular value. The issue is that contains() calls get() which
+            searches for a key and returns a value. The fix is that contains()
+            should specifically test if the indexed bucket contains a key
+            which matches the key value passed to contains().
+        '''
+        hm: HashMap = HashMap()
+        hm.put(key, falsy_value)
+        assert hm.contains(key) == True
 
 
 class TestComponent:

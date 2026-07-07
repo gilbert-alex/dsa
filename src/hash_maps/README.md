@@ -49,7 +49,7 @@ To the external caller the important distinction is that a Hashmap will store sa
 | `put(key, value)` | $O(1)$<sup>(a)</sup> | $O(1)$<sup>(a)</sup> | Traverses list-backed bucket in event of collisions |
 | `get(key, default)` | $O(1)$ | $O(1)$ | Searches list-backed bucket if necessary |
 | `remove(key)` | $O(1)$ | $O(1)$ | Searches list-backed bucket if necessary |
-| `contains(key)` | $O(k)$ | $O(1)$ | Traverses list where $k$ is link of the list |
+| `contains(key)` | $O(k)$ | $O(1)$ | Traverses list where $k$ is length of the list |
 | `_hash(value)` | $O(l)$<sup>(b)</sup> | $O(l)$<sup>(b)</sup> | Simple implementation for educational repo |
 | `_resize()` | $O(n)$ | $O(n)$ | Doubles storage |
 | `__len__()` | $O(1)$ | $O(1)$ | Returns `self.length` |
@@ -73,6 +73,9 @@ The generator method, probe, walks each `HashSet` bucket returning it's index nu
 **Tombstone Pattern**<br>
 The Singleton "tombstone" class is used by `HashSet` to treat buckets which were formerly occupied distinctly from those which are never used. This distinction matters when capacity is being recaptured by `_find_next_empty` and when searching for values impacted by collisions with `_scan_for_target`. 
 
+**Duplicates**
+Duplicate values are simply ignored by `_insert()` as they are not allowed in sets.
+
 ### HashMap
 
 **Bucket Datatype**<br>
@@ -81,6 +84,9 @@ Each entry is stored as a tuple of key/value pairs where key is a string and val
 **Get Method Default Argument**<br>
 An optional argument is allowed in the get method to determine what the method call should return if the requested key is not found. The `Any` type is used here so that MyPy will let the caller pass any value here. This is probably nonsense but I wanted a reason to use the `Any` type hint. 
 
+**Duplicates**
+Duplicate keys will cause the satellite data to be replaced with the value passed to the most recent call to `put()`. Therefore, duplicate keys are not allowed. Duplciates in the values stored with any key do not matter.   
+
 ---
 
 ## Invariants
@@ -88,12 +94,10 @@ An optional argument is allowed in the get method to determine what the method c
 - Every non-empty bucket is either occupied or a tombstone (Hashset only).
 - Total occupied buckets as a ratio of capacity is less than the maximum allowed load factor.
 - Hashsets contain only unique values.
-- Hashmaps contain unique keys but may contain duplicate values.
+- Hashmaps contain only unique keys.
 
 ---
 
 ## TODOs and Questions
 
-- test uniqueness invariants
-- test falsy values in Hashmap.contains() because Hashmap.get() is returning value, not key, to the ternary.
 - create a downsize method (opposed of resize)

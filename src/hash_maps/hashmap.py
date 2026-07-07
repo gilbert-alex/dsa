@@ -83,8 +83,15 @@ class HashMap(Generic[T]):
 
 
     def contains(self, key: str) -> bool:
-        return False if not self.get(key) else True
-    
+        index: int = self._hash(key)
+        bucket: BucketType = self._buckets[index]
+
+        for k, _ in bucket:
+            if k == key:
+                return True
+        
+        return False
+
 
     def __len__(self) -> int:
         return self._size
