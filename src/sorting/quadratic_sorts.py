@@ -48,10 +48,29 @@ class Sorts():
         return array 
 
 
+    def selection_sort(self, array: list[int]) -> list[int]:
+        self._swap_count = 0
+        self._compare_count = 0
+
+        for i in range(len(array)-1):
+            smallest_index: int = i
+
+            for j in range(len(array)-1, i, -1):
+                if self._compare(array[j], array[smallest_index]):
+                    smallest_index = j
+
+            if i is not smallest_index:
+                self._swap(array, i, smallest_index)
+
+            print(f'{array} after finding {smallest_index} and swapping with {i}')
+
+        return array
+
 if __name__ == '__main__':
     l = [3, 2, 1]
     m = [1, 2, 3]
 
     s = Sorts()
-    #s.insertion_sort(l) print(s.bubble_sort(m))
-    print(s.bubble_sort(l))
+    print(f'initial array: {l}')
+    s.selection_sort(l)
+    

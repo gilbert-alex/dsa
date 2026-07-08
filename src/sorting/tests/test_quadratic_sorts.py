@@ -267,3 +267,36 @@ class TestBubbleSort():
         exp_swaps = size*(size-1)/4
         print(f'size: {size}; avg: {avg_swaps}; exp: {exp_swaps}')
         assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.15
+
+
+class TestSelectionSort():
+    def test_empty_array_returns_empty(self):
+        s = Sorts()
+        assert s.selection_sort([]) == []
+
+
+    def test_array_mutated_inplace(self):
+        s = Sorts()
+        a: list[int] = []
+        initial_addr = id(a)
+        assert id(s.selection_sort(a)) == initial_addr
+
+
+    def test_debug(self):
+        s = Sorts()
+        a: list[int] = [4, 3, 2, 1]
+        s.selection_sort(a)
+        assert a == [1, 2, 3, 4]
+
+    @pytest.mark.parametrize('unsorted_fixture', [
+        'sample_array',
+        'sorted_ascending_array',
+        'sorted_descending_array',
+        'duplicates_array',
+        'negatives_array',
+    ])
+    def test_fixture_invariants(self, unsorted_fixture, request):
+        array = request.getfixturevalue(unsorted_fixture)
+        s = Sorts()
+        result = s.selection_sort(array)
+        assert all(l <= r for l, r in zip(result, result[1:]))
