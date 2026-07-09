@@ -27,23 +27,23 @@ After an algorithm has been tested to it's theoretical benchmarks I'll modify th
 |:--|:-:|:-:|:-:|:-: |
 | `Insertion Sort()`| $O(n^2)$ | $\approx n(n-1)/4$ | $\approx (n(n-1)/4)+n$ | $O(1)$ |
 | `Bubble Sort()` | $O(n^2)$ | $\approx n(n-1)/4$ | $n(n-1)/2$ | $O(1)$ |
-| `Selection Sort()` | $O(n^2)$ | $\approx n(n-1)/4$ | $n(n-1)/2$ | $O(1)$ |
+| `Selection Sort()` | $O(n^2)$ | $\approx n - 1 - \sum_{k=2}^{n} \frac{1}{k}$ | $n(n-1)/2$ | $O(1)$ |
 
-#### Insertion Sort
+#### <u>Insertion Sort</u>
 **Description**<br>
 Starts from the beginning of an array and backtracks over previously sorted keys swapping any inversions until a greater or equal value, or the beginning of the array, is encountered. Efficient for nearly-sorted data.
 
 **Invariants**<br>
 The subarray `A[0:i-1]` consists of the same elements origionally in the same subarray but in sorted order.
 
-#### Bubble Sort
+#### <u>Bubble Sort</u>
 **Description**<br>
 Compares adjacent keys and swaps them if they are in the wrong order. An outer loop narrows the unsorted search space, while the inner loop "bubbles" the target value to its correct boundary. Generally inefficient due to excessive swap operations.
 
 **Invariants**<br>
 The subarray `A[0:i-1]` consists of the same elements origionally in the same subarray but in sorted order.
 
-#### Selection Sort
+#### <u>Selection Sort</u>
 **Description**<br>
 For each i-th position of an array the lowest element in the remaining unsorted subarry is swapped with the element at i. Self swaps are ignored.
 
