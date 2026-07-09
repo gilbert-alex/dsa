@@ -27,6 +27,7 @@ After an algorithm has been tested to it's theoretical benchmarks I'll modify th
 |:--|:-:|:-:|:-:|:-: |
 | `Insertion Sort()`| $O(n^2)$ | $\approx n(n-1)/4$ | $\approx (n(n-1)/4)+n$ | $O(1)$ |
 | `Bubble Sort()` | $O(n^2)$ | $\approx n(n-1)/4$ | $n(n-1)/2$ | $O(1)$ |
+| `Selection Sort()` | $O(n^2)$ | $\approx n(n-1)/4$ | $n(n-1)/2$ | $O(1)$ |
 
 #### Insertion Sort
 **Description**<br>
@@ -40,9 +41,14 @@ The subarray `A[0:i-1]` consists of the same elements origionally in the same su
 Compares adjacent keys and swaps them if they are in the wrong order. An outer loop narrows the unsorted search space, while the inner loop "bubbles" the target value to its correct boundary. Generally inefficient due to excessive swap operations.
 
 **Invariants**<br>
-placeholder
+The subarray `A[0:i-1]` consists of the same elements origionally in the same subarray but in sorted order.
 
-**Placeholder**<br>
+#### Selection Sort
+**Description**<br>
+For each i-th position of an array the lowest element in the remaining unsorted subarry is swapped with the element at i. Self swaps are ignored.
+
+**Invariants**<br>
+The subarray `A[0:i-1]` consists of the same elements origionally in the same subarray but in sorted order.
 
 ---
 
@@ -54,9 +60,11 @@ These sorting algorithms are wrapped in a unified Python tracking class. While s
 **Bubble Sort**<br>
 A traditional version moves the largest value to the right of the array. This implementation is the opposite and sometimes called a "shaker" or "bubble-down".
 
+**Selection Sort**<br>
+An optimized implementation guards against swapping elements if the smallest element is already in the i-th position of any iteration. This reduces the expected swaps from $n-1$ to $n-1-\sum_{k=2}^{n} \frac{1}{k}$ as in any iteration where $k$ is the number of unsorted elements, there is a $1/k$ probability that the lowest element is already in sorted position. 
+
 ---
 
 ## TODOs and Questions
-- [ ] Add `Selection Sort` to the quadratic module.
 - [ ] Create divide and conquer method with `Merge Sort` and `Quick Sort`.
 

@@ -59,10 +59,7 @@ class Sorts():
                 if self._compare(array[j], array[smallest_index]):
                     smallest_index = j
 
-            if i is not smallest_index:
-                self._swap(array, i, smallest_index)
-
-            print(f'{array} after finding {smallest_index} and swapping with {i}')
+            self._swap(array, i, smallest_index)
 
         return array
 

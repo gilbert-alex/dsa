@@ -110,7 +110,7 @@ class TestInsertionSort():
         assert s._swap_count == expected
 
 
-    @pytest.mark.parametrize('size', [10, 50, 100])
+    @pytest.mark.parametrize('size', [50, 100, 200])
     def test_average_case_compares(self, size):
         ''' Compares Average Case: (n(n-1)/4)+n 
             - n: outer loop
@@ -133,10 +133,10 @@ class TestInsertionSort():
         avg_compares = statistics.mean(compares_list)
         exp_compares = (size*(size-1)/4)+size
         print(f'size: {size}; avg: {avg_compares}; exp: {exp_compares}')
-        assert abs(avg_compares - exp_compares) < exp_compares * 0.15
+        assert abs(avg_compares - exp_compares) < exp_compares * 0.1
 
 
-    @pytest.mark.parametrize('size', [10, 50, 100])
+    @pytest.mark.parametrize('size', [50, 100, 200])
     def test_average_case_swaps(self, size):
         ''' Swaps Average Case: n(n-1)/4 
             - n: outer loop
@@ -158,7 +158,7 @@ class TestInsertionSort():
         avg_swaps = statistics.mean(swaps_list)
         exp_swaps = size*(size-1)/4
         print(f'size: {size}; avg: {avg_swaps}; exp: {exp_swaps}')
-        assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.15
+        assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.1
 
 
     def test_dictionary_sort(self, list_of_dictionaries):
@@ -225,7 +225,7 @@ class TestBubbleSort():
               value by default.
             - /2: as the outer loop iterates the sorted subarray limits
               the max distance necessary to move a value.
-            - The count of compares is known because all options are 
+            - The count of compares is known because all unsorted options are 
               compared in every loop iteration.
         '''
         s = Sorts()
@@ -243,7 +243,7 @@ class TestBubbleSort():
         assert avg_compares == exp_compares
 
 
-    @pytest.mark.parametrize('size', [10, 50, 100])
+    @pytest.mark.parametrize('size', [50, 100, 200])
     def test_average_case_swaps(self, size):
         ''' Swaps Average Case: n(n-1)/4 
             - n: outer loop
@@ -266,7 +266,19 @@ class TestBubbleSort():
         avg_swaps = statistics.mean(swaps_list)
         exp_swaps = size*(size-1)/4
         print(f'size: {size}; avg: {avg_swaps}; exp: {exp_swaps}')
-        assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.15
+        assert abs(avg_swaps - exp_swaps) < exp_swaps * 0.1
+
+
+def estimated_self_swaps(n: int) -> float:
+    return sum(1.0 / k for k in range(2, n+1))
+
+
+class TestHelper():
+    def test_estimated_self_swaps(self):
+        assert round(estimated_self_swaps(0), 2) == 0.00
+        assert round(estimated_self_swaps(2), 2) == 0.50
+        assert round(estimated_self_swaps(3), 2) == 0.83
+        assert round(estimated_self_swaps(4), 2) == 1.08
 
 
 class TestSelectionSort():
@@ -300,3 +312,75 @@ class TestSelectionSort():
         s = Sorts()
         result = s.selection_sort(array)
         assert all(l <= r for l, r in zip(result, result[1:]))
+
+
+    @pytest.mark.parametrize('unsorted_fixture', [
+        ('sample_array'),
+        ('sorted_ascending_array'),
+        ('sorted_descending_array'),
+        ('duplicates_array'),
+        ('negatives_array'),
+        ('scattered_array'),
+        ('more_scattered_array'),
+    ])
+    def test_swap_count(self, unsorted_fixture, request):
+        array = request.getfixturevalue(unsorted_fixture)
+        s = Sorts()
+        s.selection_sort(array)
+        assert s._swap_count == len(array)-1
+        
+
+    @pytest.mark.parametrize('size', [10, 50, 100])
+    def test_average_case_compares(self, size):
+        ''' Compares Average Case: n(n-1)/2 
+            - n-1: outer loop except last index which will be the max
+              value by default.
+            - n: inner loop
+            - /2: as the outer loop iterates the sorted subarray limits
+              the max distance necessary to move a value.
+            - The count of compares is known because all unsorted options are 
+              compared in every loop iteration.
+        '''
+        s = Sorts()
+        compares_list: list[int] = []
+
+        for _ in range(100):
+            array: list[int] = list(range(size))
+            random.shuffle(array)
+            s.selection_sort(array)
+            compares_list.append(s._compare_count)
+
+        avg_compares = statistics.mean(compares_list)
+        exp_compares = size*(size-1)/2
+        print(f'size: {size}; avg: {avg_compares}; exp: {exp_compares}')
+        assert avg_compares == exp_compares
+
+
+    @pytest.mark.parametrize('size', [50, 100, 200])
+    def test_average_case_swaps(self, size):
+        ''' Swaps Average Case: (n-1)-sum(1/k)
+            - n: The length of the array
+            - -1: The last unsorted element will always be the greatest value
+              and will be in the correct position.
+            - sum(1/k): where k is the number of unsorted elements in each
+              outer loop iteration.
+                - The smallest value is equally likely to be in the i-th 
+                  position. Therefore, each inner loop's iteration has a 
+                  1/k probability to not need to call swap.
+            - Some additional factor of Euler's number should also be included
+              to more accurately address the area under curve but I wont try to
+              address that here and I'm ok with allowing for error in the assert.
+        '''
+        s = Sorts()
+        swaps_list: list[int] = []
+
+        for _ in range(100):
+            array: list[int] = list(range(size))
+            random.shuffle(array)
+            s.selection_sort(array)
+            swaps_list.append(s._swap_count)
+
+        avg_swaps = statistics.mean(swaps_list)
+        exp_swaps = size-1-estimated_self_swaps(size)
+        print(f'size: {size}; avg: {avg_swaps: 6.3f}; exp: {exp_swaps: 6.3f}')
+        assert round(abs(avg_swaps - exp_swaps), 2) < round(exp_swaps * 0.1, 2)
