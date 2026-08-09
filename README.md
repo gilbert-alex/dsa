@@ -44,8 +44,12 @@ Thank you for taking the time to read this and I'm open to all constructive feed
 │   │   └── singly_linked_list.py
 │   ├── sorting/
 │   │   ├── tests/
+│   │   │   ├── test_clrs_insertion.py
+│   │   │   ├── test_clrs_merge.py
 │   │   │   └── test_quadratic_sorts.py
 │   │   ├── README.md
+│   │   ├── clrs_insertion_sort.py
+│   │   ├── clrs_merge_sort.py
 │   │   ├── quadratic_sorts.py
 │   │   └── toy_loops.py
 │   ├── stacks_queues/
